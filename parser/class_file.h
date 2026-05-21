@@ -37,7 +37,7 @@ struct AttrInfo
  *     field_info fields[fields_count];
  *     u2 methods_count;
  *     method_info methods[methods_count];
- *     2 attributes_count;
+ *     u2 attributes_count;
  *     attribute_info attributes[attributes_count];
  * }
  */

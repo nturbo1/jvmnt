@@ -1,30 +1,30 @@
 #include "parser/parser.h"
 
+#include "parser/class_file.h"
+
 #include <iostream>
 #include <fstream>
+#include <cstdio>
 
 int main()
 {
-    std::ifstream class_file{"Main.class", std::ios::binary };
-    if (class_file.fail())
+    std::ifstream class_file_src{"Main.class", std::ios::binary };
+    if (class_file_src.fail())
     {
+        // TODO: Replace with a log function/method
         std::cout << "Failed to open the class file." << std::endl;
         return 1;
     }
-
+    // TODO: Replace with a log function/method
     std::cout << "Successfully opened the class file.\n";
 
-    int ch{ class_file.get() };
-    while(!class_file.eof())
-    {
-        std::cout << ch;
-        ch = class_file.get();
-    }
-    std::cout << "\n\n==========================================================\n"
-        << "End of file\n";
+    ClassFileReader cf_reader{ class_file_src };
+    ClassFileParser cf_parser{ cf_reader };
 
-    ClassFileParser class_file_parser = ClassFileParser{};
-    class_file_parser.parseFile("Main.class");
+    ClassFile cf{ cf_parser.parse() };
+
+    // For testing only
+    printf("Magic: %x\n", cf.magic);
 
     return 0;
 }
