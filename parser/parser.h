@@ -17,4 +17,6 @@ private:
     ClassFileReader& m_reader;
 };
 
+std::ostream& operator<<(std::ostream& os, const ClassFile& cf);
+
 #endif // PARSER_H

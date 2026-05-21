@@ -24,7 +24,7 @@ int main()
     ClassFile cf{ cf_parser.parse() };
 
     // For testing only
-    printf("Magic: %x\n", cf.magic);
+    std::cout << cf << std::endl;
 
     return 0;
 }
