@@ -15,6 +15,9 @@ public:
 
 private:
     ClassFileReader& m_reader;
+
+    std::vector<std::unique_ptr<ConstPoolEntry>> parse_const_pool();
+    std::unique_ptr<ConstDoubleInfo> parse_const_double(ConstPoolEntryTag tag);
 };
 
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf);

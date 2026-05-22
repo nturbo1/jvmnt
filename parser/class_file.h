@@ -2,15 +2,12 @@
 #define PARSER_CLASS_FILE_H
 
 #include "base.h"
+#include "const_pool.h"
 
 #include <vector>
+#include <memory>
 
 const u4 CLASS_FILE_MAGIC = 0xCAFEBABE;
-
-struct ConstPoolEntry
-{
-    virtual ~ConstPoolEntry() = default;
-};
 
 struct FieldInfo
 {};
@@ -47,7 +44,7 @@ struct ClassFile
     const u2 minor_version;
     const u2 major_version;
 
-    const std::vector<ConstPoolEntry> const_pool;
+    const std::vector<std::unique_ptr<ConstPoolEntry>> const_pool;
 
     const u2 access_flags;
     const u2 this_class;
