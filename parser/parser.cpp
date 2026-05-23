@@ -85,7 +85,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         // TODO: Remove the below if statement when you're done!!!
-        if (i == 15)
+        if (i == 16)
         {
             std::cout << "i = " << i << "\ntag = " << tag << "\n";
             log_info("t = %d\n", t);
@@ -125,7 +125,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
             const_pool.push_back(parse_const_double_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_NameAndType:
-            log_fixme("Implement constant pool entry 'CONSTANT_NameAndType' parser!");
+            const_pool.push_back(parse_const_nameandtype_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_Utf8:
             const_pool.push_back(parse_const_utf8_info(tag));
@@ -219,7 +219,8 @@ std::unique_ptr<ConstDoubleInfo> ClassFileParser::parse_const_double_info(ConstP
     return std::make_unique<ConstDoubleInfo>(tag, high_bytes, low_bytes);
 }
 
-std::unique_ptr<ConstInvokeDynamicInfo> ClassFileParser::parse_const_invoke_dynamic_info(ConstPoolEntryTag tag)
+std::unique_ptr<ConstInvokeDynamicInfo>
+ClassFileParser::parse_const_invoke_dynamic_info(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_InvokeDynamic &&
             "Non 'CONSTANT_InvokeDynamic' constant pool entry tag value was passed to the"
@@ -274,6 +275,30 @@ std::unique_ptr<ConstUtf8Info> ClassFileParser::parse_const_utf8_info(ConstPoolE
     std::cout << "length = " << length << "\n";
 
     return std::make_unique<ConstUtf8Info>(tag, utf8_bytes);
+}
+
+std::unique_ptr<ConstNameAndTypeInfo>
+ClassFileParser::parse_const_nameandtype_info(ConstPoolEntryTag tag)
+{
+    assert(tag == ConstPoolEntryTag::CONSTANT_NameAndType &&
+            "Non 'CONSTANT_NameAndType' constant pool entry tag value was passed"
+            "to the 'CONSTANT_NameAndType_info' parser");
+
+    u2 name_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that:
+    //       - the value of the `name_index` item must be a valid index into the
+    //         `constant_pool` table. The `constant_pool` entry at that index must be a
+    //         `CONSTANT_Utf8_info` structure representing either the special method
+    //         name `<init>` or a valid unqualified name denoting a field or method.
+
+    u2 descriptor_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that:
+    //       - the value of the `descriptor_index` item must be a valid index into the
+    //         `constant_pool` table. The `constant_pool` entry at that index must be a
+    //         `CONSTANT_Utf8_info` structure representing a valid field descriptor
+    //         or method descriptor.
+
+    return std::make_unique<ConstNameAndTypeInfo>(tag, name_index, descriptor_index);
 }
 
 static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& indent)

@@ -163,4 +163,26 @@ struct ConstUtf8Info
     ConstUtf8Info(ConstPoolEntryTag t, std::vector<u1> bs);
 };
 
+struct ConstNameAndTypeInfo
+    : ConstPoolEntry
+{
+    /*
+     * The value of the `name_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Utf8_info` structure representing either the special method
+     * name `<init>` or a valid unqualified name denoting a field or method.
+     */
+    u2 name_index;
+
+    /*
+     * The value of the `descriptor_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Utf8_info` structure representing a valid field descriptor
+     * or method descriptor.
+     */
+    u2 descriptor_index;
+
+    ConstNameAndTypeInfo(ConstPoolEntryTag t, u2 name_idx, u2 descriptor_idx);
+};
+
 #endif // PARSER_CONST_POOL_H
