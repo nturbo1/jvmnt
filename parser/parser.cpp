@@ -85,7 +85,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         // TODO: Remove the below if statement when you're done!!!
-        if (i == 3)
+        if (i == 4)
         {
             std::cout << "i = " << i << "\ntag = " << tag << "\n";
             log_info("t = %d\n", t);
@@ -110,7 +110,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
             log_fixme("Implement constant pool entry 'CONSTANT_InterfaceMethodref' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_String:
-            log_fixme("Implement constant pool entry 'CONSTANT_String' parser!");
+            const_pool.push_back(parse_const_string_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_Integer:
             log_fixme("Implement constant pool entry 'CONSTANT_Integer' parser!");
@@ -192,6 +192,21 @@ std::unique_ptr<ConstFieldrefInfo> ClassFileParser::parse_const_fieldref_info(Co
     //         the name and descriptor of the field. The descriptor MUST be a field descriptor.
 
     return std::make_unique<ConstFieldrefInfo>(tag, class_index, name_and_type_index);
+}
+
+std::unique_ptr<ConstStringInfo> ClassFileParser::parse_const_string_info(ConstPoolEntryTag tag)
+{
+    assert(tag == ConstPoolEntryTag::CONSTANT_String &&
+            "Non 'CONSTANT_String' constant pool entry tag value was passed to the CONSTANT_String_info parser");
+
+    u2 string_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that:
+    //       - the value of the `string_index` item must be a valid index into the
+    //         `constant_pool` table. The `constant_pool` entry at that index must be a
+    //         `CONSTANT_Utf8_info` structure representing the sequence of Unicode
+    //         code points to which the String object is to be initialized.
+
+    return std::make_unique<ConstStringInfo>(tag, string_index);
 }
 
 std::unique_ptr<ConstDoubleInfo> ClassFileParser::parse_const_double_info(ConstPoolEntryTag tag)

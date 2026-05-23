@@ -91,6 +91,20 @@ struct ConstFieldrefInfo
     ConstFieldrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx);
 };
 
+struct ConstStringInfo
+    : ConstPoolEntry
+{
+    /*
+     * The value of the `string_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Utf8_info` structure representing the sequence of Unicode
+     * code points to which the String object is to be initialized.
+     */
+    u2 string_index;
+
+    ConstStringInfo(ConstPoolEntryTag t, u2 string_idx);
+};
+
 /*
  * The ConstClassInfo structure is used to represent a class or an interface.
  */
