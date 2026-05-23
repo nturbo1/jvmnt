@@ -85,7 +85,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         // TODO: Remove the below if statement when you're done!!!
-        if (i == 12)
+        if (i == 2)
         {
             std::cout << "i = " << i << "\ntag = " << tag << "\n";
             log_info("t = %d\n", t);
@@ -104,7 +104,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
             log_fixme("Implement constant pool entry 'CONSTANT_Fieldref' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Methodref:
-            log_fixme("Implement constant pool entry 'CONSTANT_Methodref' parser!");
+            const_pool.push_back(parse_const_method_ref_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
             log_fixme("Implement constant pool entry 'CONSTANT_InterfaceMethodref' parser!");
@@ -145,6 +145,31 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
     }
 
     return const_pool;
+}
+
+std::unique_ptr<ConstMethodrefInfo> ClassFileParser::parse_const_method_ref_info(ConstPoolEntryTag tag)
+{
+    assert(tag == ConstPoolEntryTag::CONSTANT_Methodref &&
+            "Non 'CONSTANT_Methodref' constant pool entry tag value was passed to the CONSTANT_Methodref_info parser");
+
+    u2 class_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that the value of the `class_index` item must be a valid index into the
+    //       `constant_pool` table. The `constant_pool` entry at that index must be a
+    //       `CONSTANT_Class_info` structure representing a class, NOT an interface, type
+    //       that has the method as a member.
+
+    u2 name_and_type_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that:
+    //       - the value of the `name_and_type_index` item must be a valid index into
+    //         the `constant_pool` table. The `constant_pool` entry at that index must be a
+    //         `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
+    //         the name and descriptor of the method.
+    //
+    //       - if the name of the method begins with a '<' ('\u003c'), then the name must
+    //         be the special name `<init>`, representing an instance initialization method.
+    //         The return type of such a method must be `void`.
+
+    return std::make_unique<ConstMethodrefInfo>(tag, class_index, name_and_type_index);
 }
 
 std::unique_ptr<ConstDoubleInfo> ClassFileParser::parse_const_double_info(ConstPoolEntryTag tag)

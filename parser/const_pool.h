@@ -43,6 +43,32 @@ struct ConstPoolEntry
     virtual ~ConstPoolEntry() = default;
 };
 
+struct ConstMethodrefInfo
+    : ConstPoolEntry
+{
+    /*
+     * The value of the `class_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Class_info` structure representing a class, NOT an interface, type
+     * that has the method as a member.
+     */
+    u2 class_index;
+
+    /*
+     * The value of the `name_and_type_index` item must be a valid index into
+     * the `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
+     * the name and descriptor of the method.
+     *
+     * If the name of the method begins with a '<' ('\u003c'), then the name must
+     * be the special name `<init>`, representing an instance initialization method.
+     * The return type of such a method must be `void`.
+     */
+    u2 name_and_type_index;
+
+    ConstMethodrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx);
+};
+
 /*
  * The ConstClassInfo structure is used to represent a class or an interface.
  */
