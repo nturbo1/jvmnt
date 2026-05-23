@@ -351,7 +351,12 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
         break;
     }
     case ConstPoolEntryTag::CONSTANT_NameAndType:
+    {
+        const ConstNameAndTypeInfo& cnati = static_cast<const ConstNameAndTypeInfo&>(e);
+        os << indent << "\tname_index: " << cnati.name_index << ",\n"
+           << indent << "\tdescriptor_index: " << cnati.descriptor_index << "\n";
         break;
+    }
     case ConstPoolEntryTag::CONSTANT_Utf8:
     {
         const ConstUtf8Info& cutf8i = static_cast<const ConstUtf8Info&>(e);
