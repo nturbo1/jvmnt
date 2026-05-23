@@ -271,8 +271,6 @@ std::unique_ptr<ConstUtf8Info> ClassFileParser::parse_const_utf8_info(ConstPoolE
 
         utf8_bytes.push_back(b);
     }
-    std::cout << "utf8_bytes.size() = " << utf8_bytes.size() << "\t\t";
-    std::cout << "length = " << length << "\n";
 
     return std::make_unique<ConstUtf8Info>(tag, utf8_bytes);
 }
