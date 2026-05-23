@@ -85,7 +85,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         // TODO: Remove the below if statement when you're done!!!
-        if (i == 4)
+        if (i == 15)
         {
             std::cout << "i = " << i << "\ntag = " << tag << "\n";
             log_info("t = %d\n", t);
