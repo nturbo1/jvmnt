@@ -276,9 +276,19 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
         break;
     }
     case ConstPoolEntryTag::CONSTANT_Fieldref:
+    {
+        const ConstFieldrefInfo& cfri = static_cast<const ConstFieldrefInfo&>(e);
+        os << indent << "\tclass_index: " << cfri.class_index << ",\n"
+           << indent << "\tname_and_type_index: " << cfri.name_and_type_index << "\n";
         break;
+    }
     case ConstPoolEntryTag::CONSTANT_Methodref:
+    {
+        const ConstMethodrefInfo& cmri = static_cast<const ConstMethodrefInfo&>(e);
+        os << indent << "\tclass_index: " << cmri.class_index << ",\n"
+           << indent << "\tname_and_type_index: " << cmri.name_and_type_index << "\n";
         break;
+    }
     case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
         break;
     case ConstPoolEntryTag::CONSTANT_String:
