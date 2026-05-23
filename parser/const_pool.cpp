@@ -12,6 +12,12 @@ ConstMethodrefInfo::ConstMethodrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 nam
     name_and_type_index{ name_and_type_idx }
 {}
 
+ConstFieldrefInfo::ConstFieldrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx)
+    : ConstPoolEntry(t),
+    class_index{ class_idx },
+    name_and_type_index{ name_and_type_idx }
+{}
+
 ConstDoubleInfo::ConstDoubleInfo(ConstPoolEntryTag t, u4 h_bytes, u4 l_bytes)
     : ConstPoolEntry(t),
     high_bytes{ h_bytes },

@@ -85,7 +85,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         // TODO: Remove the below if statement when you're done!!!
-        if (i == 2)
+        if (i == 3)
         {
             std::cout << "i = " << i << "\ntag = " << tag << "\n";
             log_info("t = %d\n", t);
@@ -101,10 +101,10 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
             const_pool.push_back(parse_const_class_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_Fieldref:
-            log_fixme("Implement constant pool entry 'CONSTANT_Fieldref' parser!");
+            const_pool.push_back(parse_const_fieldref_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_Methodref:
-            const_pool.push_back(parse_const_method_ref_info(tag));
+            const_pool.push_back(parse_const_methodref_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
             log_fixme("Implement constant pool entry 'CONSTANT_InterfaceMethodref' parser!");
@@ -147,7 +147,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
     return const_pool;
 }
 
-std::unique_ptr<ConstMethodrefInfo> ClassFileParser::parse_const_method_ref_info(ConstPoolEntryTag tag)
+std::unique_ptr<ConstMethodrefInfo> ClassFileParser::parse_const_methodref_info(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_Methodref &&
             "Non 'CONSTANT_Methodref' constant pool entry tag value was passed to the CONSTANT_Methodref_info parser");
@@ -170,6 +170,28 @@ std::unique_ptr<ConstMethodrefInfo> ClassFileParser::parse_const_method_ref_info
     //         The return type of such a method must be `void`.
 
     return std::make_unique<ConstMethodrefInfo>(tag, class_index, name_and_type_index);
+}
+
+std::unique_ptr<ConstFieldrefInfo> ClassFileParser::parse_const_fieldref_info(ConstPoolEntryTag tag)
+{
+    assert(tag == ConstPoolEntryTag::CONSTANT_Fieldref &&
+            "Non 'CONSTANT_Fieldref' constant pool entry tag value was passed to the CONSTANT_Fieldref_info parser");
+
+    u2 class_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that:
+    //       - the value of the `class_index` item must be a valid index into the
+    //         `constant_pool` table. The `constant_pool` entry at that index must be a
+    //         `CONSTANT_Class_info` structure representing a class or an interface type
+    //         that has the field as a member.
+
+    u2 name_and_type_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that:
+    //       - the value of the `name_and_type_index` item must be a valid index into
+    //         the `constant_pool` table. The `constant_pool` entry at that index must be a
+    //         `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
+    //         the name and descriptor of the field. The descriptor MUST be a field descriptor.
+
+    return std::make_unique<ConstFieldrefInfo>(tag, class_index, name_and_type_index);
 }
 
 std::unique_ptr<ConstDoubleInfo> ClassFileParser::parse_const_double_info(ConstPoolEntryTag tag)

@@ -58,7 +58,7 @@ struct ConstMethodrefInfo
      * The value of the `name_and_type_index` item must be a valid index into
      * the `constant_pool` table. The `constant_pool` entry at that index must be a
      * `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
-     * the name and descriptor of the method.
+     * the name and descriptor of the method. The descriptor MUST be a method descriptor.
      *
      * If the name of the method begins with a '<' ('\u003c'), then the name must
      * be the special name `<init>`, representing an instance initialization method.
@@ -67,6 +67,28 @@ struct ConstMethodrefInfo
     u2 name_and_type_index;
 
     ConstMethodrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx);
+};
+
+struct ConstFieldrefInfo
+    : ConstPoolEntry
+{
+    /*
+     * The value of the `class_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Class_info` structure representing a class or an interface type
+     * that has the field as a member.
+     */
+    u2 class_index;
+
+    /*
+     * The value of the `name_and_type_index` item must be a valid index into
+     * the `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
+     * the name and descriptor of the field. The descriptor MUST be a field descriptor.
+     */
+    u2 name_and_type_index;
+
+    ConstFieldrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx);
 };
 
 /*
