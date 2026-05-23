@@ -81,7 +81,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
 
     std::vector<std::unique_ptr<ConstPoolEntry>> const_pool;
     // cp_info constant_pool[constant_pool_count-1]
-    const_pool.reserve(const_pool_length - 1);
+    const_pool.reserve(const_pool_count - 1);
     for (int i = 1; i < const_pool_count; i++)
     {
         u1 t{ m_reader.read_u1() };
