@@ -20,8 +20,10 @@ ClassFile ClassFileParser::parse()
 {
     u4 magic{ m_reader.read_u4() };
     // TODO: Validate the magic number!
+
     u2 minor_version{ m_reader.read_u2() };
     u2 major_version{ m_reader.read_u2() };
+    // TODO: Validate the version support!
 
     std::vector<std::unique_ptr<ConstPoolEntry>> const_pool{ parse_const_pool() };
 
@@ -73,8 +75,6 @@ ConstPoolEntryTag matchConstPoolEntryTag(u1 tag)
 std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
 {
     u2 const_pool_count{ m_reader.read_u2() };
-    // TODO: REMOVE WHEN YOU'RE DONE!
-    std::cout << "const_pool_count = " << const_pool_count << "\n";
 
     m_reader.read_u1(); // Skipping a byte because it is 0 for some reason even though
                         // it should not be 0.
@@ -88,7 +88,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         // TODO: Remove the below if statement when you're done!!!
-        if (i == 6)
+        if (i == 12)
         {
             std::cout << "i = " << i << "\ntag = " << tag << "\n";
             log_info("t = %d\n", t);
