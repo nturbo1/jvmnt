@@ -307,7 +307,11 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
         break;
     case ConstPoolEntryTag::CONSTANT_String:
+    {
+        const ConstStringInfo& csi = static_cast<const ConstStringInfo&>(e);
+        os << indent << "\tstring_index: " << csi.string_index << ",\n";
         break;
+    }
     case ConstPoolEntryTag::CONSTANT_Integer:
         break;
     case ConstPoolEntryTag::CONSTANT_Float:
