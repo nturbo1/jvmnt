@@ -79,8 +79,9 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
     m_reader.read_u1(); // Skipping a byte because it is 0 for some reason even though
                         // it should not be 0.
 
-    // cp_info constant_pool[constant_pool_count-1]
     std::vector<std::unique_ptr<ConstPoolEntry>> const_pool;
+    // cp_info constant_pool[constant_pool_count-1]
+    const_pool.reserve(const_pool_length - 1);
     for (int i = 1; i < const_pool_count; i++)
     {
         u1 t{ m_reader.read_u1() };
@@ -198,7 +199,8 @@ std::unique_ptr<ConstUtf8Info> ClassFileParser::parse_const_utf8_info(ConstPoolE
 
     u2 length{ m_reader.read_u2() };
     std::vector<u1> utf8_bytes;
-    for (std::size_t i; i < length; i++)
+    utf8_bytes.reserve(length);
+    for (std::size_t i = 0; i < length; i++)
     {
         u1 b{ m_reader.read_u1() };
         // TODO: VALIDATE that:
@@ -250,7 +252,16 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     case ConstPoolEntryTag::CONSTANT_NameAndType:
         break;
     case ConstPoolEntryTag::CONSTANT_Utf8:
+    {
+        const ConstUtf8Info& cutf8i = static_cast<const ConstUtf8Info&>(e);
+        os << std::hex << indent << "\tbytes: [ ";
+        for (std::size_t i = 0; i < cutf8i.bytes.size(); i++)
+        {
+           os << cutf8i.bytes[i] << " ";
+        }
+        os << "]\n" << std::dec;
         break;
+    }
     case ConstPoolEntryTag::CONSTANT_MethodHandle:
         break;
     case ConstPoolEntryTag::CONSTANT_MethodType:
