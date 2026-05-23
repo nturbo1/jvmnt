@@ -84,14 +84,6 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         u1 t{ m_reader.read_u1() };
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
-        // TODO: Remove the below if statement when you're done!!!
-        if (i == 16)
-        {
-            std::cout << "i = " << i << "\ntag = " << tag << "\n";
-            log_info("t = %d\n", t);
-            break;
-        }
-
         if (tag == ConstPoolEntryTag::INVALID)
             log_fatal("Constant pool entry at index %d has an invalid tag.", i);
 
