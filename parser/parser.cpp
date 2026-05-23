@@ -87,7 +87,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         // TODO: Remove the below if statement when you're done!!!
-        if (i == 4)
+        if (i == 6)
         {
             std::cout << "i = " << i << "\ntag = " << tag << "\n";
             log_info("t = %d\n", t);
@@ -130,7 +130,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
             log_fixme("Implement constant pool entry 'CONSTANT_NameAndType' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Utf8:
-            log_fixme("Implement constant pool entry 'CONSTANT_Utf8' parser!");
+            const_pool.push_back(parse_const_utf8_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_MethodHandle:
             log_fixme("Implement constant pool entry 'CONSTANT_MethodHandle' parser!");
@@ -180,7 +180,7 @@ std::unique_ptr<ConstInvokeDynamicInfo> ClassFileParser::parse_const_invoke_dyna
 std::unique_ptr<ConstClassInfo> ClassFileParser::parse_const_class_info(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_Class &&
-            "Non 'CONSTANT_Class' constant pool entry tag value was passed to the CONSTANT_Class_info parser");
+            "Non 'CONSTANT_Class' constant pool entry tag value was passed to the 'CONSTANT_Class_info' parser");
 
     u2 name_index{ m_reader.read_u2() };
     // TODO: VALIDATE the value of the `name_index` item must be a valid index into
@@ -189,6 +189,25 @@ std::unique_ptr<ConstClassInfo> ClassFileParser::parse_const_class_info(ConstPoo
     //       name encoded in internal form.
 
     return std::make_unique<ConstClassInfo>(tag, name_index);
+}
+
+std::unique_ptr<ConstUtf8Info> ClassFileParser::parse_const_utf8_info(ConstPoolEntryTag tag)
+{
+    assert(tag == ConstPoolEntryTag::CONSTANT_Utf8 &&
+            "Non 'CONSTANT_Utf8' constant pool entry tag value was passed to the 'CONSTANT_Utf8_info' parser");
+
+    u2 length{ m_reader.read_u2() };
+    std::vector<u1> utf8_bytes;
+    for (std::size_t i; i < length; i++)
+    {
+        u1 b{ m_reader.read_u1() };
+        // TODO: VALIDATE that:
+        //          - no byte may have the value (byte)`0`.
+        //          - no byte may lie in the range (byte)`0xf0` to (byte)`0xff`
+        utf8_bytes.push_back(b);
+    }
+
+    return std::make_unique<ConstUtf8Info>(tag, utf8_bytes);
 }
 
 static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& indent)

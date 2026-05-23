@@ -27,6 +27,11 @@ ConstClassInfo::ConstClassInfo(ConstPoolEntryTag t, u2 name_idx)
     name_index{ name_idx }
 {}
 
+ConstUtf8Info::ConstUtf8Info(ConstPoolEntryTag t, std::vector<u1> bs)
+    : ConstPoolEntry(t),
+    bytes{ bs }
+{}
+
 std::ostream& operator<<(std::ostream& os, const ConstPoolEntryTag& t)
 {
     switch(t) {

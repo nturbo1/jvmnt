@@ -4,6 +4,7 @@
 #include "base.h"
 
 #include <ostream>
+#include <vector>
 
 enum class ConstPoolEntryTag
 {
@@ -82,6 +83,22 @@ struct ConstInvokeDynamicInfo
     u2 name_and_type_index;
 
     ConstInvokeDynamicInfo(ConstPoolEntryTag t, u2 bootstrp_method_attr_idx, u2 name_and_type_idx);
+};
+
+/*
+ * The `ConstUtf8Info` structure is used to represent constant string values.
+ */
+struct ConstUtf8Info
+    : ConstPoolEntry
+{
+    /*
+     * The bytes array contains the bytes of the string.
+     * No byte may have the value (byte)`0`.
+     * No byte may lie in the range (byte)`0xf0` to (byte)`0xff`.
+     */
+    std::vector<u1> bytes;
+
+    ConstUtf8Info(ConstPoolEntryTag t, std::vector<u1> bs);
 };
 
 #endif // PARSER_CONST_POOL_H

@@ -20,6 +20,7 @@ private:
     std::unique_ptr<ConstDoubleInfo> parse_const_double_info(ConstPoolEntryTag tag);
     std::unique_ptr<ConstInvokeDynamicInfo> parse_const_invoke_dynamic_info(ConstPoolEntryTag tag);
     std::unique_ptr<ConstClassInfo> parse_const_class_info(ConstPoolEntryTag tag);
+    std::unique_ptr<ConstUtf8Info> parse_const_utf8_info(ConstPoolEntryTag tag);
 };
 
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf);
