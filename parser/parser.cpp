@@ -76,9 +76,6 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
 {
     u2 const_pool_count{ m_reader.read_u2() };
 
-    m_reader.read_u1(); // Skipping a byte because it is 0 for some reason even though
-                        // it should not be 0.
-
     std::vector<std::unique_ptr<ConstPoolEntry>> const_pool;
     // cp_info constant_pool[constant_pool_count-1]
     const_pool.reserve(const_pool_count - 1);
