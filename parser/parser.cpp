@@ -199,7 +199,12 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     switch(e.tag)
     {
     case ConstPoolEntryTag::CONSTANT_Class:
+    {
+        const ConstClassInfo& cci = static_cast<const ConstClassInfo&>(e);
+        os << std::dec
+           << indent << "\tname_index: " << cci.name_index << ",\n";
         break;
+    }
     case ConstPoolEntryTag::CONSTANT_Fieldref:
         break;
     case ConstPoolEntryTag::CONSTANT_Methodref:
