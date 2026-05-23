@@ -86,51 +86,51 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         u1 t{ m_reader.read_u1() };
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
         if (tag == ConstPoolEntryTag::INVALID)
-            LOG_FATAL("Constant pool entry at index %d has an invalid tag.", i);
+            log_fatal("Constant pool entry at index %d has an invalid tag.", i);
 
         switch(tag)
         {
         case ConstPoolEntryTag::CONSTANT_Class:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_Class' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_Class' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Fieldref:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_Fieldref' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_Fieldref' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Methodref:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_Methodref' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_Methodref' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_InterfaceMethodref' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_InterfaceMethodref' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_String:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_String' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_String' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Integer:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_Integer' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_Integer' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Float:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_Float' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_Float' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Long:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_Long' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_Long' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Double:
             const_pool.push_back(parse_const_double(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_NameAndType:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_NameAndType' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_NameAndType' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Utf8:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_Utf8' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_Utf8' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_MethodHandle:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_MethodHandle' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_MethodHandle' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_MethodType:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_MethodType' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_MethodType' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_InvokeDynamic:
-            LOG_FIXME("Implement constant pool entry 'CONSTANT_InvokeDynamic' parser!");
+            log_fixme("Implement constant pool entry 'CONSTANT_InvokeDynamic' parser!");
             break;
         default:
             assert(false && "The constant pool entry tag was not validated beforehand!");

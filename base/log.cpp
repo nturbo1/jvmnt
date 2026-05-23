@@ -5,26 +5,26 @@
 #include <stdexcept>
 
 #ifdef DEBUG
-static const LogLevel log_level = LogLevel::DEBUG;
+static const LogLevel log_level = LogLevel::Debug;
 #else
-static const LogLevel log_level = LogLevel::INFO;
+static const LogLevel log_level = LogLevel::Info;
 #endif
 
 static const char* lvl_name(LogLevel lvl)
 {
     switch (lvl)
     {
-        case LogLevel::DEBUG:
+        case LogLevel::Debug:
             return "DEBUG";
-        case LogLevel::INFO:
+        case LogLevel::Info:
             return "INFO";
-        case LogLevel::WARN:
+        case LogLevel::Warn:
             return "WARN";
-        case LogLevel::ERROR:
+        case LogLevel::Error:
             return "ERROR";
-        case LogLevel::FATAL:
+        case LogLevel::Fatal:
             return "FATAL";
-        case LogLevel::FIXME:
+        case LogLevel::Fixme:
             return "FIXME";
         default:
             return "INFO";
@@ -49,6 +49,6 @@ void log_write(LogLevel lvl, const char* file, int line, const char* fmt, ...)
 
     va_end(args);
 
-    if (lvl == LogLevel::FATAL)
+    if (lvl == LogLevel::Fatal)
         throw std::runtime_error("");
 }
