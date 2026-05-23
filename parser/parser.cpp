@@ -87,7 +87,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         // TODO: Remove the below if statement when you're done!!!
-        if (i == 3)
+        if (i == 4)
         {
             std::cout << "i = " << i << "\ntag = " << tag << "\n";
             log_info("t = %d\n", t);
@@ -100,7 +100,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         switch(tag)
         {
         case ConstPoolEntryTag::CONSTANT_Class:
-            log_fixme("Implement constant pool entry 'CONSTANT_Class' parser!");
+            const_pool.push_back(parse_const_class_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_Fieldref:
             log_fixme("Implement constant pool entry 'CONSTANT_Fieldref' parser!");
@@ -167,14 +167,28 @@ std::unique_ptr<ConstInvokeDynamicInfo> ClassFileParser::parse_const_invoke_dyna
 
     u2 bootstrap_method_attr_index{ m_reader.read_u2() };
     // TODO: VALIDATE that the `bootstrap_method_attr_index` item must be a valid index into the
-    // `bootstrap_methods` array of the bootstrap method table of this class file!
+    //       `bootstrap_methods` array of the bootstrap method table of this class file!
 
     u2 name_and_type_index{ m_reader.read_u2() };
     // TODO: VALIDATE that the value of the `name_and_type_index` item must be a valid index into the
-    // `constant_pool` table. The `constant_pool` entry at that index must be a
-    // `CONSTANT_NameAndType_info` structure representing a method name and method descriptor.
+    //       `constant_pool` table. The `constant_pool` entry at that index must be a
+    //       `CONSTANT_NameAndType_info` structure representing a method name and method descriptor.
 
     return std::make_unique<ConstInvokeDynamicInfo>(tag, bootstrap_method_attr_index, name_and_type_index);
+}
+
+std::unique_ptr<ConstClassInfo> ClassFileParser::parse_const_class_info(ConstPoolEntryTag tag)
+{
+    assert(tag == ConstPoolEntryTag::CONSTANT_Class &&
+            "Non 'CONSTANT_Class' constant pool entry tag value was passed to the CONSTANT_Class_info parser");
+
+    u2 name_index{ m_reader.read_u2() };
+    // TODO: VALIDATE the value of the `name_index` item must be a valid index into
+    //       the `constant_pool` table. The `constant_pool` entry at that index must be a
+    //       `CONSTANT_Utf8_info` structure representing a valid binary class or interface
+    //       name encoded in internal form.
+
+    return std::make_unique<ConstClassInfo>(tag, name_index);
 }
 
 static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& indent)

@@ -55,6 +55,8 @@ struct ConstClassInfo
      * internal form.
      */
     const u2 name_index;
+
+    ConstClassInfo(ConstPoolEntryTag t, u2 name_idx);
 };
 
 struct ConstLongInfo

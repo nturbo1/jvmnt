@@ -22,6 +22,11 @@ ConstInvokeDynamicInfo::ConstInvokeDynamicInfo(
     name_and_type_index{ name_and_type_idx }
 {}
 
+ConstClassInfo::ConstClassInfo(ConstPoolEntryTag t, u2 name_idx)
+    : ConstPoolEntry(t),
+    name_index{ name_idx }
+{}
+
 std::ostream& operator<<(std::ostream& os, const ConstPoolEntryTag& t)
 {
     switch(t) {
