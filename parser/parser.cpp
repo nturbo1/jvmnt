@@ -203,8 +203,9 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     case ConstPoolEntryTag::CONSTANT_Double:
     {
         const ConstDoubleInfo& cdi = static_cast<const ConstDoubleInfo&>(e);
-        os << indent << "\thigh_bytes: " << std::hex << cdi.high_bytes << ",\n"
-           << indent << "\tlow_bytes: " << std::hex << cdi.high_bytes << "\n"
+        os << std::hex
+           << indent << "\thigh_bytes: " << cdi.high_bytes << ",\n"
+           << indent << "\tlow_bytes: " << cdi.low_bytes << "\n"
            << std::dec;
         break;
     }
@@ -217,10 +218,16 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     case ConstPoolEntryTag::CONSTANT_MethodType:
         break;
     case ConstPoolEntryTag::CONSTANT_InvokeDynamic:
+    {
+        const ConstInvokeDynamicInfo& cidi = static_cast<const ConstInvokeDynamicInfo&>(e);
+        os << std::dec
+           << indent << "\tbootstrap_method_attr_index: " << cidi.bootstrap_method_attr_index << ",\n"
+           << indent << "\tname_and_type_index: " << cidi.name_and_type_index << "\n";
         break;
     }
+    }
 
-    os << indent << "}\n";
+    os << indent << "},\n";
 }
 
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
