@@ -203,11 +203,16 @@ std::unique_ptr<ConstUtf8Info> ClassFileParser::parse_const_utf8_info(ConstPoolE
     for (std::size_t i = 0; i < length; i++)
     {
         u1 b{ m_reader.read_u1() };
-        // TODO: VALIDATE that:
-        //          - no byte may have the value (byte)`0`.
-        //          - no byte may lie in the range (byte)`0xf0` to (byte)`0xff`
+
+        if (b == 0)
+            log_fatal("`Constant UTF8` bytes cannot be `0`!");
+        if (0xf0 <= b && b <= 0xff)
+            log_fatal("`Constant UTF8` bytes cannot lie in the range (byte)`0xf0` to (byte)`0xff`!");
+
         utf8_bytes.push_back(b);
     }
+    std::cout << "utf8_bytes.size() = " << utf8_bytes.size() << "\t\t";
+    std::cout << "length = " << length << "\n";
 
     return std::make_unique<ConstUtf8Info>(tag, utf8_bytes);
 }
@@ -254,10 +259,10 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     case ConstPoolEntryTag::CONSTANT_Utf8:
     {
         const ConstUtf8Info& cutf8i = static_cast<const ConstUtf8Info&>(e);
-        os << std::hex << indent << "\tbytes: [ ";
+        os << indent << "\tbytes: [";
         for (std::size_t i = 0; i < cutf8i.bytes.size(); i++)
         {
-           os << cutf8i.bytes[i] << " ";
+           os << cutf8i.bytes[i];
         }
         os << "]\n" << std::dec;
         break;
