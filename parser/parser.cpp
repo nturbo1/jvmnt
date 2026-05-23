@@ -85,6 +85,15 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
     {
         u1 t{ m_reader.read_u1() };
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
+
+        // TODO: Remove the below if statement when you're done!!!
+        if (i == 3)
+        {
+            std::cout << "i = " << i << "\ntag = " << tag << "\n";
+            log_info("t = %d\n", t);
+            break;
+        }
+
         if (tag == ConstPoolEntryTag::INVALID)
             log_fatal("Constant pool entry at index %d has an invalid tag.", i);
 
@@ -115,7 +124,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
             log_fixme("Implement constant pool entry 'CONSTANT_Long' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_Double:
-            const_pool.push_back(parse_const_double(tag));
+            const_pool.push_back(parse_const_double_info(tag));
             break;
         case ConstPoolEntryTag::CONSTANT_NameAndType:
             log_fixme("Implement constant pool entry 'CONSTANT_NameAndType' parser!");
@@ -130,27 +139,42 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
             log_fixme("Implement constant pool entry 'CONSTANT_MethodType' parser!");
             break;
         case ConstPoolEntryTag::CONSTANT_InvokeDynamic:
-            log_fixme("Implement constant pool entry 'CONSTANT_InvokeDynamic' parser!");
+            const_pool.push_back(parse_const_invoke_dynamic_info(tag));
             break;
         default:
             assert(false && "The constant pool entry tag was not validated beforehand!");
         }
-
-        // TODO: Should be removed!!!
-        break;
     }
 
     return const_pool;
 }
 
-std::unique_ptr<ConstDoubleInfo> ClassFileParser::parse_const_double(ConstPoolEntryTag tag)
+std::unique_ptr<ConstDoubleInfo> ClassFileParser::parse_const_double_info(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_Double &&
-            "Non 'CONSTANT_Double' constant pool entry tag value was passed to the constant double info parser");
+            "Non 'CONSTANT_Double' constant pool entry tag value was passed to the CONSTANT_Double_info parser");
     u4 high_bytes{ m_reader.read_u4() };
     u4 low_bytes{ m_reader.read_u4() };
 
     return std::make_unique<ConstDoubleInfo>(tag, high_bytes, low_bytes);
+}
+
+std::unique_ptr<ConstInvokeDynamicInfo> ClassFileParser::parse_const_invoke_dynamic_info(ConstPoolEntryTag tag)
+{
+    assert(tag == ConstPoolEntryTag::CONSTANT_InvokeDynamic &&
+            "Non 'CONSTANT_InvokeDynamic' constant pool entry tag value was passed to the"
+            "CONSTANT_InvokeDynamic_info parser");
+
+    u2 bootstrap_method_attr_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that the `bootstrap_method_attr_index` item must be a valid index into the
+    // `bootstrap_methods` array of the bootstrap method table of this class file!
+
+    u2 name_and_type_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that the value of the `name_and_type_index` item must be a valid index into the
+    // `constant_pool` table. The `constant_pool` entry at that index must be a
+    // `CONSTANT_NameAndType_info` structure representing a method name and method descriptor.
+
+    return std::make_unique<ConstInvokeDynamicInfo>(tag, bootstrap_method_attr_index, name_and_type_index);
 }
 
 static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& indent)

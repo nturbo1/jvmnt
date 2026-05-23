@@ -73,4 +73,13 @@ struct ConstDoubleInfo
     ConstDoubleInfo(ConstPoolEntryTag t, u4 h_bytes, u4 l_bytes);
 };
 
+struct ConstInvokeDynamicInfo
+    : ConstPoolEntry
+{
+    u2 bootstrap_method_attr_index;
+    u2 name_and_type_index;
+
+    ConstInvokeDynamicInfo(ConstPoolEntryTag t, u2 bootstrp_method_attr_idx, u2 name_and_type_idx);
+};
+
 #endif // PARSER_CONST_POOL_H

@@ -12,6 +12,16 @@ ConstDoubleInfo::ConstDoubleInfo(ConstPoolEntryTag t, u4 h_bytes, u4 l_bytes)
     low_bytes{ l_bytes }
 {}
 
+ConstInvokeDynamicInfo::ConstInvokeDynamicInfo(
+    ConstPoolEntryTag t,
+    u2 bootstrp_method_attr_idx,
+    u2 name_and_type_idx
+)
+    : ConstPoolEntry(t),
+    bootstrap_method_attr_index{ bootstrp_method_attr_idx },
+    name_and_type_index{ name_and_type_idx }
+{}
+
 std::ostream& operator<<(std::ostream& os, const ConstPoolEntryTag& t)
 {
     switch(t) {
