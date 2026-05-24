@@ -80,8 +80,51 @@ struct FieldInfo
     );
 };
 
+/*
+ * Each method, including each instance initialization method and the class or
+ * interface initialization method, is described by a `method_info` structure.
+ *
+ * No two methods in one class file may have the same name and descriptor.
+ *
+ * The structure has the following format:
+ *
+ *     method_info {
+ *         u2 access_flags;
+ *         u2 name_index;
+ *         u2 descriptor_index;
+ *         u2 attributes_count;
+ *         attribute_info attributes[attributes_count];
+ *     }
+ */
 struct MethodInfo
-{};
+{
+    u2 access_flags;
+
+    /*
+     * The value of the `name_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Utf8_info` structure representing either one of the special
+     * method names `<init>` or `<clinit>`, or a valid unqualified name
+     * denoting a method.
+     */
+    u2 name_index;
+
+    /*
+     * The value of the `descriptor_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be
+     * a `CONSTANT_Utf8_info` structure representing a valid method descriptor.
+     */
+    u2 descriptor_index;
+
+    std::vector<std::unique_ptr<AttrInfo>> attributes;
+
+    MethodInfo(
+        u2 access_fgs,
+        u2 name_idx,
+        u2 descriptor_idx,
+        std::vector<std::unique_ptr<AttrInfo>> attributes
+    );
+};
 
 /*
  * ClassFile {

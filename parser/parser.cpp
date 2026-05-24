@@ -55,7 +55,7 @@ ClassFile ClassFileParser::parse()
     u2 interfaces_count{ m_reader.read_u2() };
     std::vector<u2> interfaces;
     interfaces.reserve(interfaces_count);
-    for (u2 i{0}; i < interfaces_count; i++)
+    for (u2 i{0}; i < interfaces_count; ++i)
     {
         u2 intface{ m_reader.read_u2() };
         // TODO: VALIDATE that:
@@ -71,6 +71,7 @@ ClassFile ClassFileParser::parse()
     }
 
     std::vector<FieldInfo> fields{ parse_fields() };
+    std::vector<MethodInfo> methods{ parse_methods() };
 
     return ClassFile{
             magic,
@@ -81,7 +82,8 @@ ClassFile ClassFileParser::parse()
             this_class,
             super_class,
             interfaces,
-            std::move(fields)
+            std::move(fields),
+            std::move(methods),
     };
 }
 
@@ -131,7 +133,7 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
     const_pool.reserve(const_pool_count - 1);
 
     // `constant_pool` indexes are in the range `1, 2, ..., constant_pool_count - 1`.
-    for (int i{1}; i < const_pool_count; i++)
+    for (int i{1}; i < const_pool_count; ++i)
     {
         u1 t{ m_reader.read_u1() };
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
@@ -304,7 +306,7 @@ std::unique_ptr<ConstUtf8Info> ClassFileParser::parse_const_utf8_info(ConstPoolE
     u2 length{ m_reader.read_u2() };
     std::vector<u1> utf8_bytes;
     utf8_bytes.reserve(length);
-    for (std::size_t i{0}; i < length; i++)
+    for (std::size_t i{0}; i < length; ++i)
     {
         u1 b{ m_reader.read_u1() };
 
@@ -355,7 +357,7 @@ std::vector<FieldInfo> ClassFileParser::parse_fields()
     std::vector<FieldInfo> fields;
     fields.reserve(fields_count);
 
-    for (u2 i{0}; i < fields_count; i++)
+    for (u2 i{0}; i < fields_count; ++i)
     {
         u2 access_flags{ m_reader.read_u2() };
         u2 name_index{ m_reader.read_u2() };
@@ -376,7 +378,7 @@ std::vector<FieldInfo> ClassFileParser::parse_fields()
         std::vector<std::unique_ptr<AttrInfo>> attributes;
         attributes.reserve(attributes_count);
 
-        for (u2 i{0}; i < attributes_count; i++)
+        for (u2 i{0}; i < attributes_count; ++i)
         {
             attributes.push_back(parse_attr());
         }
@@ -385,4 +387,43 @@ std::vector<FieldInfo> ClassFileParser::parse_fields()
     }
 
     return fields;
+}
+
+std::vector<MethodInfo> ClassFileParser::parse_methods()
+{
+    u2 methods_count{ m_reader.read_u2() };
+    std::vector<MethodInfo> methods;
+    methods.reserve(methods_count);
+
+    for (u2 i = 0; i < methods_count; ++i)
+    {
+        u2 access_flags{ m_reader.read_u2() };
+        u2 name_index{ m_reader.read_u2() };
+        // TODO: VALIDATE that:
+        //       - the value of the `name_index` item must be a valid index into the
+        //         `constant_pool` table.
+        //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
+        //         structure representing either one of the special method names `<init>`
+        //         or `<clinit>`, or a valid unqualified name denoting a method.
+
+        u2 descriptor_index{ m_reader.read_u2() };
+        // TODO: VALIDATE that:
+        //       - the value of the `descriptor_index` item must be a valid index into the
+        //         `constant_pool` table.
+        //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
+        //         structure representing a valid method descriptor.
+
+        u2 attributes_count{ m_reader.read_u2() };
+        std::vector<std::unique_ptr<AttrInfo>> attributes;
+        attributes.reserve(attributes_count);
+
+        for (u2 i = 0; i < attributes_count; ++i)
+        {
+            attributes.push_back(parse_attr());
+        }
+
+        methods.emplace_back(access_flags, name_index, descriptor_index, std::move(attributes));
+    }
+
+    return methods;
 }

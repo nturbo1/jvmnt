@@ -102,6 +102,16 @@ static void print(std::ostream& os, const FieldInfo& fi, const std::string& inde
        << indent << "}";
 }
 
+static void print(std::ostream& os, const MethodInfo& mi, const std::string& indent)
+{
+    os << indent << "{\n"
+       << indent << "\taccess_flags: " << std::hex << "0x" << mi.access_flags << ",\n"
+       << indent << "\tname_index: " << std::dec << mi.name_index << ",\n"
+       << indent << "\tdescriptor_index: " << mi.descriptor_index << ",\n"
+       << indent << "\tattributes: \n" // TODO: Implement `attributes print!
+       << indent << "}";
+}
+
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
 {
     os << "{\n"
@@ -122,7 +132,7 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
     }
     else
     {
-        os << "[]\n";
+        os << "[],\n";
     }
 
     os << "\taccess_flags: " << std::hex << "0x" << cf.access_flags << "\n" << std::dec;
@@ -141,16 +151,41 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
     }
     os << "],\n";
 
-    os << "\tfields: [";
+    os << "\tfields: ";
     std::size_t fields_size{ cf.fields.size() };
     if (fields_size > 0)
     {
+        os << "[\n";
         for (std::size_t i{0}; i < fields_size - 1; i++)
         {
             print(os, cf.fields[i], "\t\t");
+            os << ",\n";
         }
+        print(os, cf.fields[fields_size - 1], "\t\t");
+        os << "\n\t],\n";
     }
-    os << "],\n";
+    else
+    {
+        os << "[],\n";
+    }
+
+    os << "\tmethods: ";
+    std::size_t methods_size{ cf.methods.size() };
+    if (methods_size > 0)
+    {
+        os << "[\n";
+        for (std::size_t i{0}; i < methods_size - 1; i++)
+        {
+            print(os, cf.methods[i], "\t\t");
+            os << ",\n";
+        }
+        print(os, cf.methods[methods_size - 1], "\t\t");
+        os << "\n\t],\n";
+    }
+    else
+    {
+        os << "[],\n";
+    }
 
     // ClassFile closing brace
     os << "}";
