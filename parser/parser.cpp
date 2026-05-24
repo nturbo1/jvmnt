@@ -55,7 +55,7 @@ ClassFile ClassFileParser::parse()
     u2 interfaces_count{ m_reader.read_u2() };
     std::vector<u2> interfaces;
     interfaces.reserve(interfaces_count);
-    for (u2 i = 0; i < interfaces_count; i++)
+    for (u2 i{0}; i < interfaces_count; i++)
     {
         u2 intface{ m_reader.read_u2() };
         // TODO: VALIDATE that:
@@ -70,6 +70,8 @@ ClassFile ClassFileParser::parse()
         interfaces.push_back(intface);
     }
 
+    std::vector<FieldInfo> fields{ parse_fields() };
+
     return ClassFile{
             magic,
             minor_version,
@@ -78,7 +80,8 @@ ClassFile ClassFileParser::parse()
             access_flags,
             this_class,
             super_class,
-            interfaces
+            interfaces,
+            std::move(fields)
     };
 }
 
@@ -126,7 +129,9 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
     std::vector<std::unique_ptr<ConstPoolEntry>> const_pool;
     // cp_info constant_pool[constant_pool_count-1]
     const_pool.reserve(const_pool_count - 1);
-    for (int i = 1; i < const_pool_count; i++)
+
+    // `constant_pool` indexes are in the range `1, 2, ..., constant_pool_count - 1`.
+    for (int i{1}; i < const_pool_count; i++)
     {
         u1 t{ m_reader.read_u1() };
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
@@ -299,7 +304,7 @@ std::unique_ptr<ConstUtf8Info> ClassFileParser::parse_const_utf8_info(ConstPoolE
     u2 length{ m_reader.read_u2() };
     std::vector<u1> utf8_bytes;
     utf8_bytes.reserve(length);
-    for (std::size_t i = 0; i < length; i++)
+    for (std::size_t i{0}; i < length; i++)
     {
         u1 b{ m_reader.read_u1() };
 
@@ -338,135 +343,46 @@ ClassFileParser::parse_const_nameandtype_info(ConstPoolEntryTag tag)
     return std::make_unique<ConstNameAndTypeInfo>(tag, name_index, descriptor_index);
 }
 
-static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& indent)
+std::unique_ptr<AttrInfo> ClassFileParser::parse_attr()
 {
-    os << indent << "{" << "\n"
-       << indent << "\ttag: " << e.tag << ",\n";
-
-    switch(e.tag)
-    {
-    case ConstPoolEntryTag::CONSTANT_Class:
-    {
-        const ConstClassInfo& cci = static_cast<const ConstClassInfo&>(e);
-        os << std::dec
-           << indent << "\tname_index: " << cci.name_index << ",\n";
-        break;
-    }
-    case ConstPoolEntryTag::CONSTANT_Fieldref:
-    {
-        const ConstFieldrefInfo& cfri = static_cast<const ConstFieldrefInfo&>(e);
-        os << indent << "\tclass_index: " << cfri.class_index << ",\n"
-           << indent << "\tname_and_type_index: " << cfri.name_and_type_index << "\n";
-        break;
-    }
-    case ConstPoolEntryTag::CONSTANT_Methodref:
-    {
-        const ConstMethodrefInfo& cmri = static_cast<const ConstMethodrefInfo&>(e);
-        os << indent << "\tclass_index: " << cmri.class_index << ",\n"
-           << indent << "\tname_and_type_index: " << cmri.name_and_type_index << "\n";
-        break;
-    }
-    case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
-        break;
-    case ConstPoolEntryTag::CONSTANT_String:
-    {
-        const ConstStringInfo& csi = static_cast<const ConstStringInfo&>(e);
-        os << indent << "\tstring_index: " << csi.string_index << ",\n";
-        break;
-    }
-    case ConstPoolEntryTag::CONSTANT_Integer:
-        break;
-    case ConstPoolEntryTag::CONSTANT_Float:
-        break;
-    case ConstPoolEntryTag::CONSTANT_Long:
-        break;
-    case ConstPoolEntryTag::CONSTANT_Double:
-    {
-        const ConstDoubleInfo& cdi = static_cast<const ConstDoubleInfo&>(e);
-        os << std::hex
-           << indent << "\thigh_bytes: " << "0x" << cdi.high_bytes << ",\n"
-           << indent << "\tlow_bytes: " << "0x" << cdi.low_bytes << "\n"
-           << std::dec;
-        break;
-    }
-    case ConstPoolEntryTag::CONSTANT_NameAndType:
-    {
-        const ConstNameAndTypeInfo& cnati = static_cast<const ConstNameAndTypeInfo&>(e);
-        os << indent << "\tname_index: " << cnati.name_index << ",\n"
-           << indent << "\tdescriptor_index: " << cnati.descriptor_index << "\n";
-        break;
-    }
-    case ConstPoolEntryTag::CONSTANT_Utf8:
-    {
-        const ConstUtf8Info& cutf8i = static_cast<const ConstUtf8Info&>(e);
-        os << indent << "\tbytes: [";
-        for (std::size_t i = 0; i < cutf8i.bytes.size(); i++)
-        {
-           os << cutf8i.bytes[i];
-        }
-        os << "]\n" << std::dec;
-        break;
-    }
-    case ConstPoolEntryTag::CONSTANT_MethodHandle:
-        break;
-    case ConstPoolEntryTag::CONSTANT_MethodType:
-        break;
-    case ConstPoolEntryTag::CONSTANT_InvokeDynamic:
-    {
-        const ConstInvokeDynamicInfo& cidi = static_cast<const ConstInvokeDynamicInfo&>(e);
-        os << std::dec
-           << indent << "\tbootstrap_method_attr_index: " << cidi.bootstrap_method_attr_index << ",\n"
-           << indent << "\tname_and_type_index: " << cidi.name_and_type_index << "\n";
-        break;
-    }
-    }
-
-    os << indent << "},\n";
+    log_fixme("IMPLEMENT Attribute parser!!!");
+    return std::make_unique<AttrInfo>();
 }
 
-std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
+std::vector<FieldInfo> ClassFileParser::parse_fields()
 {
-    os << "{\n"
-       << "\tmagic: " << std::hex << "0x" << cf.magic << ",\n"
-       << std::dec
-       << "\tminor_version: " << cf.minor_version << ",\n"
-       << "\tmajor_version: " << cf.major_version << ",\n";
+    u2 fields_count{ m_reader.read_u2() };
+    std::vector<FieldInfo> fields;
+    fields.reserve(fields_count);
 
-    os << "\tconst_pool: ";
-    if (cf.const_pool.size() > 0)
+    for (u2 i{0}; i < fields_count; i++)
     {
-        os << "[\n";
-        for (std::size_t i = 0; i < cf.const_pool.size(); i++)
+        u2 access_flags{ m_reader.read_u2() };
+        u2 name_index{ m_reader.read_u2() };
+        // TODO: VALIDATE that:
+        //       - the value of the `name_index` item must be a valid index into the
+        //        `constant_pool` table.
+        //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
+        //        structure which represents a valid unqualified name denoting a field.
+
+        u2 descriptor_index{ m_reader.read_u2() };
+        // TODO: VALIDATE that:
+        //       - the value of the `descriptor_index` item must be a valid index into the
+        //         `constant_pool` table.
+        //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
+        //         structure which represents a valid field descriptor.
+
+        u2 attributes_count{ m_reader.read_u2() };
+        std::vector<std::unique_ptr<AttrInfo>> attributes;
+        attributes.reserve(attributes_count);
+
+        for (u2 i{0}; i < attributes_count; i++)
         {
-            print(os, *cf.const_pool[i], "\t\t");
+            attributes.push_back(parse_attr());
         }
-        os << "\t],\n";
-    }
-    else
-    {
-        os << "[]\n";
+
+        fields.emplace_back(access_flags, name_index, descriptor_index, std::move(attributes));
     }
 
-    os << "\taccess_flags: " << std::hex << "0x" << cf.access_flags << "\n" << std::dec;
-    os << "\tthis_class: " << "0x" << cf.this_class << "\n";
-    os << "\tsuper_class: " << "0x" << cf.super_class << "\n";
-
-    os << "\tinterfaces: [";
-    std::size_t interfaces_size{ cf.interfaces.size() };
-    if (interfaces_size > 0)
-    {
-        for (std::size_t i = 0; i < interfaces_size - 1; i++)
-        {
-            os << cf.interfaces[i] << ", ";
-        }
-        os << cf.interfaces[interfaces_size - 1];
-    }
-    os << "]\n";
-
-    // ClassFile closing brace
-    os << "}";
-
-    os << std::dec;
-
-    return os;
+    return fields;
 }

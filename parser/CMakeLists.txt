@@ -2,6 +2,8 @@ add_library(class_parser
     parser.cpp
     class_reader.cpp
     const_pool.cpp
+    class_file.cpp
+    print.cpp
 )
 
 target_include_directories(class_parser

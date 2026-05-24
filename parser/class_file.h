@@ -9,13 +9,78 @@
 
 const u4 CLASS_FILE_MAGIC = 0xCAFEBABE;
 
+/*
+ * Attributes are used in the `ClassFile`, `field_info`, `method_info`, and
+ * `Code_attribute` structures of the class file format.
+ *
+ * All attributes have the following general format:
+ *
+ *     attribute_info {
+ *         u2 attribute_name_index;
+ *         u4 attribute_length;
+ *         u1 info[attribute_length];
+ *     }
+ */
+struct AttrInfo
+{
+    /*
+     * For all attributes, the `attribute_name_index` must be a valid unsigned
+     * 16-bit index into the `constant_pool` of the class.
+     *
+     * The `constant_pool` entry at `attribute_name_index` must be a
+     * `CONSTANT_Utf8_info` structure representing the name of the attribute.
+     */
+    u2 attr_name_index;
+};
+
+/*
+ * Each field is described by a `field_info` structure.
+ * No two fields in one class file may have the same name and descriptor.
+ *
+ * The structure has the following format:
+ *
+ *     field_info {
+ *         u2 access_flags;
+ *         u2 name_index;
+ *         u2 descriptor_index;
+ *         u2 attributes_count;
+ *         attribute_info attributes[attributes_count];
+ *     }
+ */
 struct FieldInfo
-{};
+{
+    /*
+     * The value of the access_flags item is a mask of flags used to denote
+     * access permission to and properties of this field.
+     */
+    u2 access_flags;
+
+    /*
+     * The value of the `name_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Utf8_info` structure which represents a valid unqualified
+     * name denoting a field.
+     */
+    u2 name_index;
+
+    /*
+     * The value of the `descriptor_index` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Utf8_info` structure which represents a valid field descriptor.
+     */
+    u2 descriptor_index;
+
+    std::vector<std::unique_ptr<AttrInfo>> attributes;
+
+    FieldInfo(
+        u2 access_fgs,
+        u2 name_idx,
+        u2 descriptor_idx,
+        std::vector<std::unique_ptr<AttrInfo>> attributes
+    );
+};
 
 struct MethodInfo
-{};
-
-struct AttrInfo
 {};
 
 /*
