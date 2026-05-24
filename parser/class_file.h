@@ -75,6 +75,14 @@ struct ClassFile
      */
     const u2 super_class;
 
+    /*
+     * Each value in the `interfaces` array must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at each value of
+     * `interfaces[i]`, where `0 ≤ i < interfaces_count`, must be a
+     * `CONSTANT_Class_info` structure representing an interface that is a direct
+     * superinterface of this class or interface type, in the left-to-right order
+     * given in the source for the type.
+     */
     const std::vector<u2> interfaces;
     const std::vector<FieldInfo> fields;
     const std::vector<MethodInfo> methods;

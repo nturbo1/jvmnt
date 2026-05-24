@@ -52,6 +52,24 @@ ClassFile ClassFileParser::parse()
     //         index into the `constant_pool` table. The `constant_pool` entry at that index
     //         MUST be a `CONSTANT_Class_info` structure representing the class `Object`.
 
+    u2 interfaces_count{ m_reader.read_u2() };
+    std::vector<u2> interfaces;
+    interfaces.reserve(interfaces_count);
+    for (u2 i = 0; i < interfaces_count; i++)
+    {
+        u2 intface{ m_reader.read_u2() };
+        // TODO: VALIDATE that:
+        //       - each value in the `interfaces` array must be a valid index into the
+        //         `constant_pool` table.
+        //       - the `constant_pool` entry at each value of `interfaces[i]`, where
+        //         `0 ≤ i < interfaces_count`, must be a `CONSTANT_Class_info` structure
+        //         representing an interface that is a direct superinterface of this
+        //         class or interface type, in the left-to-right order given in the
+        //         source for the type.
+
+        interfaces.push_back(intface);
+    }
+
     return ClassFile{
             magic,
             minor_version,
@@ -59,7 +77,8 @@ ClassFile ClassFileParser::parse()
             std::move(const_pool),
             access_flags,
             this_class,
-            super_class
+            super_class,
+            interfaces
     };
 }
 
@@ -365,8 +384,8 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     {
         const ConstDoubleInfo& cdi = static_cast<const ConstDoubleInfo&>(e);
         os << std::hex
-           << indent << "\thigh_bytes: " << cdi.high_bytes << ",\n"
-           << indent << "\tlow_bytes: " << cdi.low_bytes << "\n"
+           << indent << "\thigh_bytes: " << "0x" << cdi.high_bytes << ",\n"
+           << indent << "\tlow_bytes: " << "0x" << cdi.low_bytes << "\n"
            << std::dec;
         break;
     }
@@ -408,25 +427,43 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
 {
     os << "{\n"
-       << "\tmagic: " << std::hex << cf.magic << ",\n"
+       << "\tmagic: " << std::hex << "0x" << cf.magic << ",\n"
        << std::dec
        << "\tminor_version: " << cf.minor_version << ",\n"
-       << "\tmajor_version: " << cf.major_version << "\n";
+       << "\tmajor_version: " << cf.major_version << ",\n";
 
+    os << "\tconst_pool: ";
     if (cf.const_pool.size() > 0)
     {
-        os << "\tconst_pool: [\n";
+        os << "[\n";
         for (std::size_t i = 0; i < cf.const_pool.size(); i++)
         {
             print(os, *cf.const_pool[i], "\t\t");
         }
-        os << "\t]\n";
+        os << "\t],\n";
+    }
+    else
+    {
+        os << "[]\n";
     }
 
-    os << "\taccess_flags: " << std::hex << cf.access_flags << "\n" << std::dec;
-    os << "\tthis_class: " << cf.this_class << "\n";
-    os << "\tsuper_class: " << cf.super_class << "\n";
+    os << "\taccess_flags: " << std::hex << "0x" << cf.access_flags << "\n" << std::dec;
+    os << "\tthis_class: " << "0x" << cf.this_class << "\n";
+    os << "\tsuper_class: " << "0x" << cf.super_class << "\n";
 
+    os << "\tinterfaces: [";
+    std::size_t interfaces_size{ cf.interfaces.size() };
+    if (interfaces_size > 0)
+    {
+        for (std::size_t i = 0; i < interfaces_size - 1; i++)
+        {
+            os << cf.interfaces[i] << ", ";
+        }
+        os << cf.interfaces[interfaces_size - 1];
+    }
+    os << "]\n";
+
+    // ClassFile closing brace
     os << "}";
 
     os << std::dec;
