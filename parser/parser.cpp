@@ -26,12 +26,14 @@ ClassFile ClassFileParser::parse()
     // TODO: Validate the version support!
 
     std::vector<std::unique_ptr<ConstPoolEntry>> const_pool{ parse_const_pool() };
+    u2 access_flags{ m_reader.read_u2() };
 
     return ClassFile{
             magic,
             minor_version,
             major_version,
-            std::move(const_pool)
+            std::move(const_pool),
+            access_flags
     };
 }
 
@@ -394,6 +396,8 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         }
         os << "\t]\n";
     }
+
+    os << "\taccess_flags: " << std::hex << cf.access_flags << "\n" << std::dec;
 
     os << "}";
 
