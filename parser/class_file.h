@@ -194,7 +194,7 @@ struct ClassFile
     const std::vector<u2> interfaces;
     const std::vector<FieldInfo> fields;
     const std::vector<MethodInfo> methods;
-    const std::vector<AttrInfo> attributes;
+    const std::vector<std::unique_ptr<AttrInfo>> attributes;
 };
 
 #endif // PARSER_CLASS_FILE_H

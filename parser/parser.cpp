@@ -72,6 +72,7 @@ ClassFile ClassFileParser::parse()
 
     std::vector<FieldInfo> fields{ parse_fields() };
     std::vector<MethodInfo> methods{ parse_methods() };
+    std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes() };
 
     return ClassFile{
             magic,
@@ -84,6 +85,7 @@ ClassFile ClassFileParser::parse()
             interfaces,
             std::move(fields),
             std::move(methods),
+            std::move(attributes)
     };
 }
 
@@ -351,6 +353,20 @@ std::unique_ptr<AttrInfo> ClassFileParser::parse_attr()
     return std::make_unique<AttrInfo>();
 }
 
+std::vector<std::unique_ptr<AttrInfo>> ClassFileParser::parse_attributes()
+{
+    u2 attributes_count{ m_reader.read_u2() };
+    std::vector<std::unique_ptr<AttrInfo>> attributes;
+    attributes.reserve(attributes_count);
+
+    for (u2 i{0}; i < attributes_count; ++i)
+    {
+        attributes.push_back(parse_attr());
+    }
+
+    return attributes;
+}
+
 std::vector<FieldInfo> ClassFileParser::parse_fields()
 {
     u2 fields_count{ m_reader.read_u2() };
@@ -374,15 +390,7 @@ std::vector<FieldInfo> ClassFileParser::parse_fields()
         //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
         //         structure which represents a valid field descriptor.
 
-        u2 attributes_count{ m_reader.read_u2() };
-        std::vector<std::unique_ptr<AttrInfo>> attributes;
-        attributes.reserve(attributes_count);
-
-        for (u2 i{0}; i < attributes_count; ++i)
-        {
-            attributes.push_back(parse_attr());
-        }
-
+        std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes() };
         fields.emplace_back(access_flags, name_index, descriptor_index, std::move(attributes));
     }
 
@@ -413,15 +421,7 @@ std::vector<MethodInfo> ClassFileParser::parse_methods()
         //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
         //         structure representing a valid method descriptor.
 
-        u2 attributes_count{ m_reader.read_u2() };
-        std::vector<std::unique_ptr<AttrInfo>> attributes;
-        attributes.reserve(attributes_count);
-
-        for (u2 i = 0; i < attributes_count; ++i)
-        {
-            attributes.push_back(parse_attr());
-        }
-
+        std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes() };
         methods.emplace_back(access_flags, name_index, descriptor_index, std::move(attributes));
     }
 
