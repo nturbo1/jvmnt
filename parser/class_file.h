@@ -47,6 +47,13 @@ struct ClassFile
     const std::vector<std::unique_ptr<ConstPoolEntry>> const_pool;
 
     const u2 access_flags;
+
+    /*
+     * The value of the `this_class` item must be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * `CONSTANT_Class_info` structure representing the class or interface
+     * defined by this class file.
+     */
     const u2 this_class;
     const u2 super_class;
 
