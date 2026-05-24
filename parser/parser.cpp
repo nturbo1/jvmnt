@@ -34,13 +34,32 @@ ClassFile ClassFileParser::parse()
     //         `CONSTANT_Class_info` structure representing the class or interface
     //         defined by this class file.
 
+    u2 super_class{ m_reader.read_u2() };
+    // TODO: VALIDATE that:
+    //       - for a class, the value of the `super_class` item either MUST be zero or
+    //         MUST be a valid index into the `constant_pool` table.
+    //
+    //       - if the value of the `super_class` item is nonzero, the `constant_pool`
+    //         entry at that index MUST be a `CONSTANT_Class_info` structure representing
+    //         the direct superclass of the class defined by this class file. Neither the
+    //         direct superclass nor any of its superclasses may have the `ACC_FINAL` flag
+    //         set in the `access_flags` item of its `ClassFile` structure.
+    //
+    //       - if the value of the `super_class` item is zero, then this class file MUST represent
+    //         the class `Object`, the only class or interface without a direct superclass.
+    //
+    //       - for an interface, the value of the `super_class` item MUST always be a valid
+    //         index into the `constant_pool` table. The `constant_pool` entry at that index
+    //         MUST be a `CONSTANT_Class_info` structure representing the class `Object`.
+
     return ClassFile{
             magic,
             minor_version,
             major_version,
             std::move(const_pool),
             access_flags,
-            this_class
+            this_class,
+            super_class
     };
 }
 
@@ -406,6 +425,7 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
 
     os << "\taccess_flags: " << std::hex << cf.access_flags << "\n" << std::dec;
     os << "\tthis_class: " << cf.this_class << "\n";
+    os << "\tsuper_class: " << cf.super_class << "\n";
 
     os << "}";
 
