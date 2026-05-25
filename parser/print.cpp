@@ -112,6 +112,13 @@ static void print(std::ostream& os, const MethodInfo& mi, const std::string& ind
        << indent << "}";
 }
 
+static void print(std::ostream& os, const AttrInfo& ai, const std::string& indent)
+{
+    os << indent << "{\n"
+       << indent << "\tattr_name_index: " << ai.attr_name_index << ",\n"
+       << indent << "}";
+}
+
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
 {
     os << "{\n"
@@ -180,6 +187,24 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
             os << ",\n";
         }
         print(os, cf.methods[methods_size - 1], "\t\t");
+        os << "\n\t],\n";
+    }
+    else
+    {
+        os << "[],\n";
+    }
+
+    os << "\tattributes: ";
+    std::size_t attributes_size{ cf.attributes.size() };
+    if (attributes_size > 0)
+    {
+        os << "[\n";
+        for (std::size_t i{0}; i < attributes_size - 1; i++)
+        {
+            print(os, *(cf.attributes[i]), "\t\t");
+            os << ",\n";
+        }
+        print(os, *(cf.attributes[attributes_size - 1]), "\t\t");
         os << "\n\t],\n";
     }
     else
