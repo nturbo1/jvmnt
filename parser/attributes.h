@@ -9,11 +9,38 @@
 
 enum class AttrType
 {
+    // The next five attributes are CRITICAL to correct interpretation of the
+    // class file by the Java Virtual Machine:
     ConstantValue,
     Code,
     StackMapTable,
     Exceptions,
     BootstrapMethods,
+
+    // The next twelve attributes are critical to correct interpretation of the
+    // class file by the class libraries of the Java SE platform:
+    InnerClasses,
+    EnclosingMethod,
+    Synthetic,
+    Signature,
+    RuntimeVisibleAnnotations,
+    RuntimeInvisibleAnnotations,
+    RuntimeVisibleParameterAnnotations,
+    RuntimeInvisibleParameterAnnotations,
+    RuntimeVisibleTypeAnnotations,
+    RuntimeInvisibleTypeAnnotations,
+    AnnotationDefault,
+    MethodParameters,
+
+    // The next six attributes are NOT critical to correct interpretation of the
+    // class file by either the Java Virtual Machine or the class libraries of
+    // the Java SE platform, but are useful for tools:
+    SourceFile,
+    SourceDebugExtension,
+    LineNumberTable,
+    LocalVariableTable,
+    LocalVariableTypeTable,
+    Deprecated,
 
     Unknown // used for unknown/nonexistent/invalid attribute types
 };

@@ -410,6 +410,78 @@ ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& 
         log_fixme("IMPLEMENT BootstrapMethods parser!!!");
         break;
 
+    case AttrType::InnerClasses:
+        log_fixme("IMPLEMENT InnerClasses parser!!!");
+        break;
+
+    case AttrType::EnclosingMethod:
+        log_fixme("IMPLEMENT EnclosingMethod parser!!!");
+        break;
+
+    case AttrType::Synthetic:
+        log_fixme("IMPLEMENT Synthetic parser!!!");
+        break;
+
+    case AttrType::Signature:
+        log_fixme("IMPLEMENT Signature parser!!!");
+        break;
+
+    case AttrType::RuntimeVisibleAnnotations:
+        log_fixme("IMPLEMENT RuntimeVisibleAnnotations parser!!!");
+        break;
+
+    case AttrType::RuntimeInvisibleAnnotations:
+        log_fixme("IMPLEMENT RuntimeInvisibleAnnotations parser!!!");
+        break;
+
+    case AttrType::RuntimeVisibleParameterAnnotations:
+        log_fixme("IMPLEMENT RuntimeVisibleParameterAnnotations parser!!!");
+        break;
+
+    case AttrType::RuntimeInvisibleParameterAnnotations:
+        log_fixme("IMPLEMENT RuntimeInvisibleParameterAnnotations parser!!!");
+        break;
+
+    case AttrType::RuntimeVisibleTypeAnnotations:
+        log_fixme("IMPLEMENT RuntimeVisibleTypeAnnotations parser!!!");
+        break;
+
+    case AttrType::RuntimeInvisibleTypeAnnotations:
+        log_fixme("IMPLEMENT RuntimeInvisibleTypeAnnotations parser!!!");
+        break;
+
+    case AttrType::AnnotationDefault:
+        log_fixme("IMPLEMENT AnnotationDefault parser!!!");
+        break;
+
+    case AttrType::MethodParameters:
+        log_fixme("IMPLEMENT MethodParameters parser!!!");
+        break;
+
+    case AttrType::SourceFile:
+        log_fixme("IMPLEMENT SourceFile parser!!!");
+        break;
+
+    case AttrType::SourceDebugExtension:
+        log_fixme("IMPLEMENT SourceDebugExtension parser!!!");
+        break;
+
+    case AttrType::LineNumberTable:
+        log_fixme("IMPLEMENT LineNumberTable parser!!!");
+        break;
+
+    case AttrType::LocalVariableTable:
+        log_fixme("IMPLEMENT LocalVariableTable parser!!!");
+        break;
+
+    case AttrType::LocalVariableTypeTable:
+        log_fixme("IMPLEMENT LocalVariableTypeTable parser!!!");
+        break;
+
+    case AttrType::Deprecated:
+        log_fixme("IMPLEMENT Deprecated parser!!!");
+        break;
+
     default:
         log_fatal("Unknown `AttrType` enum value: %d", attr_type);
     }
