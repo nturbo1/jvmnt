@@ -51,3 +51,10 @@ AttrType resolve_attr_type(
         ? it->second
         : AttrType::Unknown;
 }
+
+ExceptionTableEntry::ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catch_t)
+    : start_pc{ start },
+    end_pc{ end },
+    handler_pc{ handler },
+    catch_type{ catch_t }
+{}

@@ -91,6 +91,8 @@ struct ExceptionTableEntry
      * for all exceptions. This is used to implement `finally`.
      */
     u2 catch_type;
+
+    ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catch_t);
 };
 
 /*

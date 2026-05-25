@@ -521,10 +521,18 @@ void ClassFileParser::parse_attr_code(
 
 std::vector<ExceptionTableEntry> ClassFileParser::parse_exception_table()
 {
-    log_fixme("IMPLEMENT exception table parser!!!");
-    // u2 exception_table_length{ m_reader.read_u2() };
-    // for (u2 i = 0; i < exception_table_length; i++)
-    // {
-    // }
-    return std::vector<ExceptionTableEntry>();
+    u2 exception_table_length{ m_reader.read_u2() };
+    std::vector<ExceptionTableEntry> exception_table;
+    exception_table.reserve(exception_table_length);
+    for (u2 i = 0; i < exception_table_length; i++)
+    {
+        u2 start_pc{ m_reader.read_u2() };
+        u2 end_pc{ m_reader.read_u2() };
+        u2 handler_pc{ m_reader.read_u2() };
+        u2 catch_type{ m_reader.read_u2() };
+
+        exception_table.emplace_back(start_pc, end_pc, handler_pc, catch_type);
+    }
+
+    return exception_table;
 }
