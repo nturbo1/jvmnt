@@ -388,7 +388,7 @@ ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& 
     switch (attr_type)
     {
     case AttrType::ConstantValue:
-        log_fixme("IMPLEMENT ConstantValue parser!!!");
+        log_fatal("IMPLEMENT ConstantValue parser!!!");
         break;
 
     case AttrType::Code:
@@ -399,87 +399,87 @@ ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& 
     }
 
     case AttrType::StackMapTable:
-        log_fixme("IMPLEMENT StackMapTable parser!!!");
+        log_fatal("IMPLEMENT StackMapTable parser!!!");
         break;
 
     case AttrType::Exceptions:
-        log_fixme("IMPLEMENT Exceptions parser!!!");
+        log_fatal("IMPLEMENT Exceptions parser!!!");
         break;
 
     case AttrType::BootstrapMethods:
-        log_fixme("IMPLEMENT BootstrapMethods parser!!!");
+        log_fatal("IMPLEMENT BootstrapMethods parser!!!");
         break;
 
     case AttrType::InnerClasses:
-        log_fixme("IMPLEMENT InnerClasses parser!!!");
+        log_fatal("IMPLEMENT InnerClasses parser!!!");
         break;
 
     case AttrType::EnclosingMethod:
-        log_fixme("IMPLEMENT EnclosingMethod parser!!!");
+        log_fatal("IMPLEMENT EnclosingMethod parser!!!");
         break;
 
     case AttrType::Synthetic:
-        log_fixme("IMPLEMENT Synthetic parser!!!");
+        log_fatal("IMPLEMENT Synthetic parser!!!");
         break;
 
     case AttrType::Signature:
-        log_fixme("IMPLEMENT Signature parser!!!");
+        log_fatal("IMPLEMENT Signature parser!!!");
         break;
 
     case AttrType::RuntimeVisibleAnnotations:
-        log_fixme("IMPLEMENT RuntimeVisibleAnnotations parser!!!");
+        log_fatal("IMPLEMENT RuntimeVisibleAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeInvisibleAnnotations:
-        log_fixme("IMPLEMENT RuntimeInvisibleAnnotations parser!!!");
+        log_fatal("IMPLEMENT RuntimeInvisibleAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeVisibleParameterAnnotations:
-        log_fixme("IMPLEMENT RuntimeVisibleParameterAnnotations parser!!!");
+        log_fatal("IMPLEMENT RuntimeVisibleParameterAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeInvisibleParameterAnnotations:
-        log_fixme("IMPLEMENT RuntimeInvisibleParameterAnnotations parser!!!");
+        log_fatal("IMPLEMENT RuntimeInvisibleParameterAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeVisibleTypeAnnotations:
-        log_fixme("IMPLEMENT RuntimeVisibleTypeAnnotations parser!!!");
+        log_fatal("IMPLEMENT RuntimeVisibleTypeAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeInvisibleTypeAnnotations:
-        log_fixme("IMPLEMENT RuntimeInvisibleTypeAnnotations parser!!!");
+        log_fatal("IMPLEMENT RuntimeInvisibleTypeAnnotations parser!!!");
         break;
 
     case AttrType::AnnotationDefault:
-        log_fixme("IMPLEMENT AnnotationDefault parser!!!");
+        log_fatal("IMPLEMENT AnnotationDefault parser!!!");
         break;
 
     case AttrType::MethodParameters:
-        log_fixme("IMPLEMENT MethodParameters parser!!!");
+        log_fatal("IMPLEMENT MethodParameters parser!!!");
         break;
 
     case AttrType::SourceFile:
-        log_fixme("IMPLEMENT SourceFile parser!!!");
+        log_fatal("IMPLEMENT SourceFile parser!!!");
         break;
 
     case AttrType::SourceDebugExtension:
-        log_fixme("IMPLEMENT SourceDebugExtension parser!!!");
+        log_fatal("IMPLEMENT SourceDebugExtension parser!!!");
         break;
 
     case AttrType::LineNumberTable:
-        log_fixme("IMPLEMENT LineNumberTable parser!!!");
+        log_fatal("IMPLEMENT LineNumberTable parser!!!");
         break;
 
     case AttrType::LocalVariableTable:
-        log_fixme("IMPLEMENT LocalVariableTable parser!!!");
+        log_fatal("IMPLEMENT LocalVariableTable parser!!!");
         break;
 
     case AttrType::LocalVariableTypeTable:
-        log_fixme("IMPLEMENT LocalVariableTypeTable parser!!!");
+        log_fatal("IMPLEMENT LocalVariableTypeTable parser!!!");
         break;
 
     case AttrType::Deprecated:
-        log_fixme("IMPLEMENT Deprecated parser!!!");
+        log_fatal("IMPLEMENT Deprecated parser!!!");
         break;
 
     default:

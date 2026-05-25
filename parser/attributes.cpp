@@ -38,7 +38,25 @@ AttrType resolve_attr_type(
         { "Code", AttrType::Code },
         { "StackMapTable", AttrType::StackMapTable },
         { "Exceptions", AttrType::Exceptions },
-        { "BootstrapMethods", AttrType::BootstrapMethods }
+        { "BootstrapMethods", AttrType::BootstrapMethods },
+        { "InnerClasses", AttrType::InnerClasses },
+        { "EnclosingMethod", AttrType::EnclosingMethod },
+        { "Synthetic", AttrType::Synthetic },
+        { "Signature", AttrType::Signature },
+        { "RuntimeVisibleAnnotations", AttrType::RuntimeVisibleAnnotations },
+        { "RuntimeInvisibleAnnotations", AttrType::RuntimeInvisibleAnnotations },
+        { "RuntimeVisibleParameterAnnotations", AttrType::RuntimeVisibleParameterAnnotations },
+        { "RuntimeInvisibleParameterAnnotations", AttrType::RuntimeInvisibleParameterAnnotations },
+        { "RuntimeVisibleTypeAnnotations", AttrType::RuntimeVisibleTypeAnnotations },
+        { "RuntimeInvisibleTypeAnnotations", AttrType::RuntimeInvisibleTypeAnnotations },
+        { "AnnotationDefault", AttrType::AnnotationDefault },
+        { "MethodParameters", AttrType::MethodParameters },
+        { "SourceFile", AttrType::SourceFile },
+        { "SourceDebugExtension", AttrType::SourceDebugExtension },
+        { "LineNumberTable", AttrType::LineNumberTable },
+        { "LocalVariableTable", AttrType::LocalVariableTable },
+        { "LocalVariableTypeTable", AttrType::LocalVariableTypeTable },
+        { "Deprecated", AttrType::Deprecated }
     };
 
     std::string_view attr_name(
