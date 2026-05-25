@@ -8,19 +8,8 @@ AttrInfo::AttrInfo(u2 attr_name_idx)
     : attr_name_index{ attr_name_idx }
 {}
 
-CodeAttrInfo::CodeAttrInfo(
-            u2 attr_name_idx,
-            u2 max_stk,
-            u2 max_lcls,
-            std::vector<u1> c,
-            std::vector<ExceptionTableEntry> exc_table,
-            std::vector<std::unique_ptr<AttrInfo>> attrs)
-    : AttrInfo(attr_name_idx),
-    max_stack{ max_stk },
-    max_locals{ max_lcls },
-    code{ c },
-    exception_table{ exc_table },
-    attributes{ std::move(attrs) }
+CodeAttrInfo::CodeAttrInfo(u2 attr_name_idx)
+    : AttrInfo(attr_name_idx)
 {}
 
 AttrType resolve_attr_type(
@@ -37,7 +26,6 @@ AttrType resolve_attr_type(
         log_fatal("The `constant_pool` entry at `attribute_name_index` MUST be a "
                 "`CONSTANT_Utf8_info` structure representing the name of the attribute.");
 
-    // How can I treat `(const_pool[attr_name_index - 1])` as of type `std::unique_ptr<ConstUtf8Info>`???
     ConstUtf8Info* const_utf8{ dynamic_cast<ConstUtf8Info*>(const_pool[attr_name_index - 1].get()) };
     assert(const_utf8 &&
             "The constant pool entry was not validated to be of type `CONSTANT_Utf8_info` or "

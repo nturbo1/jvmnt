@@ -32,6 +32,12 @@ private:
             const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
 
     std::unique_ptr<AttrInfo> parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    void parse_attr_code(
+            CodeAttrInfo& code_attr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    std::vector<ExceptionTableEntry> parse_exception_table();
 };
 
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf);

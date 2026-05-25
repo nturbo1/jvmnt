@@ -97,32 +97,46 @@ ConstPoolEntryTag matchConstPoolEntryTag(u1 tag)
     switch(t) {
     case ConstPoolEntryTag::CONSTANT_Class:
         return ConstPoolEntryTag::CONSTANT_Class;
+
     case ConstPoolEntryTag::CONSTANT_Fieldref:
         return ConstPoolEntryTag::CONSTANT_Fieldref;
+
     case ConstPoolEntryTag::CONSTANT_Methodref:
         return ConstPoolEntryTag::CONSTANT_Methodref;
+
     case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
         return ConstPoolEntryTag::CONSTANT_InterfaceMethodref;
+
     case ConstPoolEntryTag::CONSTANT_String:
         return ConstPoolEntryTag::CONSTANT_String;
+
     case ConstPoolEntryTag::CONSTANT_Integer:
         return ConstPoolEntryTag::CONSTANT_Integer;
+
     case ConstPoolEntryTag::CONSTANT_Float:
         return ConstPoolEntryTag::CONSTANT_Float;
+
     case ConstPoolEntryTag::CONSTANT_Long:
         return ConstPoolEntryTag::CONSTANT_Long;
+
     case ConstPoolEntryTag::CONSTANT_Double:
         return ConstPoolEntryTag::CONSTANT_Double;
+
     case ConstPoolEntryTag::CONSTANT_NameAndType:
         return ConstPoolEntryTag::CONSTANT_NameAndType;
+
     case ConstPoolEntryTag::CONSTANT_Utf8:
         return ConstPoolEntryTag::CONSTANT_Utf8;
+
     case ConstPoolEntryTag::CONSTANT_MethodHandle:
         return ConstPoolEntryTag::CONSTANT_MethodHandle;
+
     case ConstPoolEntryTag::CONSTANT_MethodType:
         return ConstPoolEntryTag::CONSTANT_MethodType;
+
     case ConstPoolEntryTag::CONSTANT_InvokeDynamic:
         return ConstPoolEntryTag::CONSTANT_InvokeDynamic;
+
     default:
         return ConstPoolEntryTag::INVALID;
     }
@@ -150,45 +164,59 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         case ConstPoolEntryTag::CONSTANT_Class:
             const_pool.push_back(parse_const_class_info(tag));
             break;
+
         case ConstPoolEntryTag::CONSTANT_Fieldref:
             const_pool.push_back(parse_const_fieldref_info(tag));
             break;
+
         case ConstPoolEntryTag::CONSTANT_Methodref:
             const_pool.push_back(parse_const_methodref_info(tag));
             break;
+
         case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
             log_fixme("Implement constant pool entry 'CONSTANT_InterfaceMethodref' parser!");
             break;
+
         case ConstPoolEntryTag::CONSTANT_String:
             const_pool.push_back(parse_const_string_info(tag));
             break;
+
         case ConstPoolEntryTag::CONSTANT_Integer:
             log_fixme("Implement constant pool entry 'CONSTANT_Integer' parser!");
             break;
+
         case ConstPoolEntryTag::CONSTANT_Float:
             log_fixme("Implement constant pool entry 'CONSTANT_Float' parser!");
             break;
+
         case ConstPoolEntryTag::CONSTANT_Long:
             log_fixme("Implement constant pool entry 'CONSTANT_Long' parser!");
             break;
+
         case ConstPoolEntryTag::CONSTANT_Double:
             const_pool.push_back(parse_const_double_info(tag));
             break;
+
         case ConstPoolEntryTag::CONSTANT_NameAndType:
             const_pool.push_back(parse_const_nameandtype_info(tag));
             break;
+
         case ConstPoolEntryTag::CONSTANT_Utf8:
             const_pool.push_back(parse_const_utf8_info(tag));
             break;
+
         case ConstPoolEntryTag::CONSTANT_MethodHandle:
             log_fixme("Implement constant pool entry 'CONSTANT_MethodHandle' parser!");
             break;
+
         case ConstPoolEntryTag::CONSTANT_MethodType:
             log_fixme("Implement constant pool entry 'CONSTANT_MethodType' parser!");
             break;
+
         case ConstPoolEntryTag::CONSTANT_InvokeDynamic:
             const_pool.push_back(parse_const_invoke_dynamic_info(tag));
             break;
+
         default:
             assert(false && "The constant pool entry tag was not validated beforehand!");
         }
@@ -362,18 +390,26 @@ ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& 
     case AttrType::ConstantValue:
         log_fixme("IMPLEMENT ConstantValue parser!!!");
         break;
+
     case AttrType::Code:
-        log_fixme("IMPLEMENT Code parser!!!");
-        break;
+    {
+        std::unique_ptr<CodeAttrInfo> code_attr{ std::make_unique<CodeAttrInfo>(attr_name_index) };
+        parse_attr_code(*code_attr, const_pool);
+        return code_attr;
+    }
+
     case AttrType::StackMapTable:
         log_fixme("IMPLEMENT StackMapTable parser!!!");
         break;
+
     case AttrType::Exceptions:
         log_fixme("IMPLEMENT Exceptions parser!!!");
         break;
+
     case AttrType::BootstrapMethods:
         log_fixme("IMPLEMENT BootstrapMethods parser!!!");
         break;
+
     default:
         log_fatal("Unknown `AttrType` enum value: %d", attr_type);
     }
@@ -455,4 +491,40 @@ ClassFileParser::parse_methods(const std::vector<std::unique_ptr<ConstPoolEntry>
     }
 
     return methods;
+}
+
+// It's assumed that the `attribute_name_index` field bytes have been read and processed
+// to determine the specific type of the attribute, so those bytes are skipped.
+void ClassFileParser::parse_attr_code(
+        CodeAttrInfo& code_attr,
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+{
+    m_reader.read_u4(); // deliberately skipping `attribute_length`
+
+    u2 max_stack{ m_reader.read_u2() };
+    u2 max_locals{ m_reader.read_u2() };
+
+    u4 code_length{ m_reader.read_u4() };
+    std::vector<u1> code;
+    code.reserve(code_length);
+    for (u4 i = 0; i < code_length; i++)
+    {
+        code.push_back(m_reader.read_u1());
+    }
+
+    code_attr.max_stack = max_stack;
+    code_attr.max_locals = max_locals;
+    code_attr.code = code;
+    code_attr.exception_table = parse_exception_table();
+    code_attr.attributes = parse_attributes(const_pool);
+}
+
+std::vector<ExceptionTableEntry> ClassFileParser::parse_exception_table()
+{
+    log_fixme("IMPLEMENT exception table parser!!!");
+    // u2 exception_table_length{ m_reader.read_u2() };
+    // for (u2 i = 0; i < exception_table_length; i++)
+    // {
+    // }
+    return std::vector<ExceptionTableEntry>();
 }

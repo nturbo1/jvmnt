@@ -135,13 +135,7 @@ struct CodeAttrInfo
     std::vector<ExceptionTableEntry> exception_table;
     std::vector<std::unique_ptr<AttrInfo>> attributes;
 
-    CodeAttrInfo(
-            u2 attr_name_idx,
-            u2 max_stk,
-            u2 max_lcls,
-            std::vector<u1> c,
-            std::vector<ExceptionTableEntry> exc_table,
-            std::vector<std::unique_ptr<AttrInfo>> attrs);
+    CodeAttrInfo(u2 attr_name_idx);
 };
 
 #endif // PARSER_ATTRIBUTES_H
