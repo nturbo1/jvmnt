@@ -3,35 +3,12 @@
 
 #include "base.h"
 #include "const_pool.h"
+#include "attributes.h"
 
 #include <vector>
 #include <memory>
 
 const u4 CLASS_FILE_MAGIC = 0xCAFEBABE;
-
-/*
- * Attributes are used in the `ClassFile`, `field_info`, `method_info`, and
- * `Code_attribute` structures of the class file format.
- *
- * All attributes have the following general format:
- *
- *     attribute_info {
- *         u2 attribute_name_index;
- *         u4 attribute_length;
- *         u1 info[attribute_length];
- *     }
- */
-struct AttrInfo
-{
-    /*
-     * For all attributes, the `attribute_name_index` must be a valid unsigned
-     * 16-bit index into the `constant_pool` of the class.
-     *
-     * The `constant_pool` entry at `attribute_name_index` must be a
-     * `CONSTANT_Utf8_info` structure representing the name of the attribute.
-     */
-    u2 attr_name_index;
-};
 
 /*
  * Each field is described by a `field_info` structure.
@@ -56,16 +33,16 @@ struct FieldInfo
     u2 access_flags;
 
     /*
-     * The value of the `name_index` item must be a valid index into the
-     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * The value of the `name_index` item MUST be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index MUST be a
      * `CONSTANT_Utf8_info` structure which represents a valid unqualified
      * name denoting a field.
      */
     u2 name_index;
 
     /*
-     * The value of the `descriptor_index` item must be a valid index into the
-     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * The value of the `descriptor_index` item MUST be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index MUST be a
      * `CONSTANT_Utf8_info` structure which represents a valid field descriptor.
      */
     u2 descriptor_index;
@@ -101,8 +78,8 @@ struct MethodInfo
     u2 access_flags;
 
     /*
-     * The value of the `name_index` item must be a valid index into the
-     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * The value of the `name_index` item MUST be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index MUST be a
      * `CONSTANT_Utf8_info` structure representing either one of the special
      * method names `<init>` or `<clinit>`, or a valid unqualified name
      * denoting a method.
@@ -110,8 +87,8 @@ struct MethodInfo
     u2 name_index;
 
     /*
-     * The value of the `descriptor_index` item must be a valid index into the
-     * `constant_pool` table. The `constant_pool` entry at that index must be
+     * The value of the `descriptor_index` item MUST be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index MUST be
      * a `CONSTANT_Utf8_info` structure representing a valid method descriptor.
      */
     u2 descriptor_index;
@@ -157,8 +134,8 @@ struct ClassFile
     const u2 access_flags;
 
     /*
-     * The value of the `this_class` item must be a valid index into the
-     * `constant_pool` table. The `constant_pool` entry at that index must be a
+     * The value of the `this_class` item MUST be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index MUST be a
      * `CONSTANT_Class_info` structure representing the class or interface
      * defined by this class file.
      */
@@ -184,9 +161,9 @@ struct ClassFile
     const u2 super_class;
 
     /*
-     * Each value in the `interfaces` array must be a valid index into the
+     * Each value in the `interfaces` array MUST be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at each value of
-     * `interfaces[i]`, where `0 ≤ i < interfaces_count`, must be a
+     * `interfaces[i]`, where `0 ≤ i < interfaces_count`, MUST be a
      * `CONSTANT_Class_info` structure representing an interface that is a direct
      * superinterface of this class or interface type, in the left-to-right order
      * given in the source for the type.

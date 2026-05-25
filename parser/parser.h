@@ -25,10 +25,13 @@ private:
     std::unique_ptr<ConstClassInfo> parse_const_class_info(ConstPoolEntryTag tag);
     std::unique_ptr<ConstUtf8Info> parse_const_utf8_info(ConstPoolEntryTag tag);
     std::unique_ptr<ConstNameAndTypeInfo> parse_const_nameandtype_info(ConstPoolEntryTag tag);
-    std::vector<FieldInfo> parse_fields();
-    std::vector<MethodInfo> parse_methods();
-    std::vector<std::unique_ptr<AttrInfo>> parse_attributes();
-    std::unique_ptr<AttrInfo> parse_attr();
+    std::vector<FieldInfo> parse_fields(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+    std::vector<MethodInfo> parse_methods(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    std::vector<std::unique_ptr<AttrInfo>> parse_attributes(
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    std::unique_ptr<AttrInfo> parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
 };
 
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf);

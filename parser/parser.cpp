@@ -2,6 +2,8 @@
 
 #include "class_file.h"
 #include "base.h"
+#include "class_file_validation.h"
+#include "attributes.h"
 
 #include <string>
 #include <iostream>
@@ -70,9 +72,9 @@ ClassFile ClassFileParser::parse()
         interfaces.push_back(intface);
     }
 
-    std::vector<FieldInfo> fields{ parse_fields() };
-    std::vector<MethodInfo> methods{ parse_methods() };
-    std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes() };
+    std::vector<FieldInfo> fields{ parse_fields(const_pool) };
+    std::vector<MethodInfo> methods{ parse_methods(const_pool) };
+    std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes(const_pool) };
 
     return ClassFile{
             magic,
@@ -347,13 +349,38 @@ ClassFileParser::parse_const_nameandtype_info(ConstPoolEntryTag tag)
     return std::make_unique<ConstNameAndTypeInfo>(tag, name_index, descriptor_index);
 }
 
-std::unique_ptr<AttrInfo> ClassFileParser::parse_attr()
+std::unique_ptr<AttrInfo>
+ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
 {
-    log_fixme("IMPLEMENT Attribute parser!!!");
-    return std::make_unique<AttrInfo>();
+    u2 attr_name_index{ m_reader.read_u2() };
+    validate_const_pool_index(const_pool, attr_name_index);
+
+    AttrType attr_type{ resolve_attr_type(const_pool, attr_name_index) };
+
+    switch (attr_type)
+    {
+    case AttrType::ConstantValue:
+        log_fixme("IMPLEMENT ConstantValue parser!!!");
+        break;
+    case AttrType::Code:
+        log_fixme("IMPLEMENT Code parser!!!");
+        break;
+    case AttrType::StackMapTable:
+        log_fixme("IMPLEMENT StackMapTable parser!!!");
+        break;
+    case AttrType::Exceptions:
+        log_fixme("IMPLEMENT Exceptions parser!!!");
+        break;
+    case AttrType::BootstrapMethods:
+        log_fixme("IMPLEMENT BootstrapMethods parser!!!");
+        break;
+    default:
+        log_fatal("Unknown `AttrType` enum value: %d", attr_type);
+    }
 }
 
-std::vector<std::unique_ptr<AttrInfo>> ClassFileParser::parse_attributes()
+std::vector<std::unique_ptr<AttrInfo>>
+ClassFileParser::parse_attributes(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
 {
     u2 attributes_count{ m_reader.read_u2() };
     std::vector<std::unique_ptr<AttrInfo>> attributes;
@@ -361,13 +388,14 @@ std::vector<std::unique_ptr<AttrInfo>> ClassFileParser::parse_attributes()
 
     for (u2 i{0}; i < attributes_count; ++i)
     {
-        attributes.push_back(parse_attr());
+        attributes.push_back(parse_attr(const_pool));
     }
 
     return attributes;
 }
 
-std::vector<FieldInfo> ClassFileParser::parse_fields()
+std::vector<FieldInfo> ClassFileParser::parse_fields(
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
 {
     u2 fields_count{ m_reader.read_u2() };
     std::vector<FieldInfo> fields;
@@ -390,14 +418,15 @@ std::vector<FieldInfo> ClassFileParser::parse_fields()
         //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
         //         structure which represents a valid field descriptor.
 
-        std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes() };
+        std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes(const_pool) };
         fields.emplace_back(access_flags, name_index, descriptor_index, std::move(attributes));
     }
 
     return fields;
 }
 
-std::vector<MethodInfo> ClassFileParser::parse_methods()
+std::vector<MethodInfo>
+ClassFileParser::parse_methods(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
 {
     u2 methods_count{ m_reader.read_u2() };
     std::vector<MethodInfo> methods;
@@ -421,7 +450,7 @@ std::vector<MethodInfo> ClassFileParser::parse_methods()
         //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
         //         structure representing a valid method descriptor.
 
-        std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes() };
+        std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes(const_pool) };
         methods.emplace_back(access_flags, name_index, descriptor_index, std::move(attributes));
     }
 

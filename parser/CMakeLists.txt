@@ -4,6 +4,8 @@ add_library(class_parser
     const_pool.cpp
     class_file.cpp
     print.cpp
+    class_file_validation.cpp
+    attributes.cpp
 )
 
 target_include_directories(class_parser
