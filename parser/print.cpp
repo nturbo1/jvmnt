@@ -92,14 +92,40 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     os << indent << "},\n";
 }
 
+static void print(std::ostream& os, const AttrInfo& ai, const std::string& indent)
+{
+    os << indent << "{\n"
+       << indent << "\tattr_name_index: " << ai.attr_name_index << ",\n"
+       << indent << "}";
+}
+
 static void print(std::ostream& os, const FieldInfo& fi, const std::string& indent)
 {
     os << indent << "{\n"
        << indent << "\taccess_flags: " << std::hex << "0x" << fi.access_flags << ",\n"
        << indent << "\tname_index: " << std::dec << fi.name_index << ",\n"
        << indent << "\tdescriptor_index: " << fi.descriptor_index << ",\n"
-       << indent << "\tattributes: \n" // TODO: Implement `attributes print!
-       << indent << "}";
+       << indent << "\tattributes: ";
+
+    std::size_t attributes_size{ fi.attributes.size() };
+    if (attributes_size > 0)
+    {
+        os << "[\n";
+        for (std::size_t i{0}; i < attributes_size - 1; i++)
+        {
+            print(os, *(fi.attributes[i]), indent + "\t\t");
+            os << ",\n";
+        }
+        print(os, *(fi.attributes[attributes_size - 1]), indent + "\t\t");
+        os << "\n" << indent << "\t],\n";
+    }
+    else
+    {
+        os << "[],\n";
+    }
+
+    // FieldInfo closing brace
+    os << indent << "}";
 }
 
 static void print(std::ostream& os, const MethodInfo& mi, const std::string& indent)
@@ -108,15 +134,27 @@ static void print(std::ostream& os, const MethodInfo& mi, const std::string& ind
        << indent << "\taccess_flags: " << std::hex << "0x" << mi.access_flags << ",\n"
        << indent << "\tname_index: " << std::dec << mi.name_index << ",\n"
        << indent << "\tdescriptor_index: " << mi.descriptor_index << ",\n"
-       << indent << "\tattributes: \n" // TODO: Implement `attributes print!
-       << indent << "}";
-}
+       << indent << "\tattributes: ";
 
-static void print(std::ostream& os, const AttrInfo& ai, const std::string& indent)
-{
-    os << indent << "{\n"
-       << indent << "\tattr_name_index: " << ai.attr_name_index << ",\n"
-       << indent << "}";
+    std::size_t attributes_size{ mi.attributes.size() };
+    if (attributes_size > 0)
+    {
+        os << "[\n";
+        for (std::size_t i{0}; i < attributes_size - 1; i++)
+        {
+            print(os, *(mi.attributes[i]), indent + "\t\t");
+            os << ",\n";
+        }
+        print(os, *(mi.attributes[attributes_size - 1]), indent + "\t\t");
+        os << "\n" << indent << "\t],\n";
+    }
+    else
+    {
+        os << "[],\n";
+    }
+
+    // MethodInfo closing brace
+    os << indent << "}";
 }
 
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
