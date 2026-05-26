@@ -44,6 +44,10 @@ private:
             const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
 
     std::vector<LineNumberTableEntry> parse_line_number_table();
+
+    void parse_attr_sourcefile(
+            SourceFileAttrInfo& sourcefile_attr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
 };
 
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf);

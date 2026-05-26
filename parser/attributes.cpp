@@ -16,6 +16,10 @@ LineNumberTableAttrInfo::LineNumberTableAttrInfo(u2 attr_name_idx)
     : AttrInfo(attr_name_idx)
 {}
 
+SourceFileAttrInfo::SourceFileAttrInfo(u2 attr_name_idx)
+    : AttrInfo(attr_name_idx)
+{}
+
 AttrType resolve_attr_type(
         const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool,
         u2 attr_name_index)

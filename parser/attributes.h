@@ -83,13 +83,13 @@ struct AttrInfo
  *
  * The values of the two items `start_pc` and `end_pc` indicate the ranges in the
  * code array at which the exception handler is active. The value of `start_pc`
- * must be a valid index into the code array of the opcode of an instruction.
- * The value of `end_pc` either must be a valid index into the code array of the
- * opcode of an instruction or must be equal to `code_length`, the length of the
- * code array. The value of `start_pc` must be less than the value of `end_pc`.
+ * MUST be a valid index into the code array of the opcode of an instruction.
+ * The value of `end_pc` either MUST be a valid index into the code array of the
+ * opcode of an instruction or MUST be equal to `code_length`, the length of the
+ * code array. The value of `start_pc` MUST be less than the value of `end_pc`.
  *
  * The `start_pc` is inclusive and `end_pc` is exclusive; that is, the exception
- * handler must be active while the program counter is within the interval
+ * handler MUST be active while the program counter is within the interval
  * `[start_pc, end_pc)`.
  */
 struct ExceptionTableEntry
@@ -99,15 +99,15 @@ struct ExceptionTableEntry
 
     /*
      * The value of the `handler_pc` item indicates the start of the exception
-     * handler. The value of the item must be a valid index into the code array
-     * and must be the index of the opcode of an instruction.
+     * handler. The value of the item MUST be a valid index into the code array
+     * and MUST be the index of the opcode of an instruction.
      */
     u2 handler_pc;
 
     /*
-     * If the value of the `catch_type` item is nonzero, it must be a valid index
+     * If the value of the `catch_type` item is nonzero, it MUST be a valid index
      * into the `constant_pool` table. The `constant_pool` entry at that index
-     * must be a `CONSTANT_Class_info` structure representing a class of
+     * MUST be a `CONSTANT_Class_info` structure representing a class of
      * exceptions that this exception handler is designated to catch. The exception
      * handler will be called only if the thrown exception is an instance of the
      * given class or one of its subclasses.
@@ -200,6 +200,40 @@ struct LineNumberTableAttrInfo
     std::vector<LineNumberTableEntry> line_number_table;
 
     LineNumberTableAttrInfo(u2 attr_name_idx);
+};
+
+/*
+ * The `SourceFile` attribute is an optional fixed-length attribute in the attributes
+ * table of a `ClassFile` structure.
+ *
+ * There may be at most one `SourceFile` attribute in the attributes table of a
+ * `ClassFile` structure.
+ *
+ * The SourceFile attribute has the following format:
+ *
+ *     SourceFile_attribute {
+ *         u2 attribute_name_index;
+ *         u4 attribute_length;
+ *         u2 sourcefile_index;
+ *     }
+ */
+struct SourceFileAttrInfo
+    : AttrInfo
+{
+    /*
+     * The value of the `sourcefile_index` item MUST be a valid index into the
+     * `constant_pool` table. The `constant_pool` entry at that index MUST be a
+     * `CONSTANT_Utf8_info` structure representing a string.
+     *
+     * The string referenced by the `sourcefile_index` item will be interpreted as indicating the
+     * name of the source file from which this class file was compiled. It will NOT be interpreted
+     * as indicating the name of a directory containing the file or an absolute path name for the file;
+     * such platform-specific additional information MUST be supplied by the run-time interpreter
+     * or development tool at the time the file name is actually used
+     */
+    u2 sourcefile_index;
+
+    SourceFileAttrInfo(u2 attr_name_idx);
 };
 
 #endif // PARSER_ATTRIBUTES_H

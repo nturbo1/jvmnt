@@ -459,8 +459,13 @@ ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& 
         break;
 
     case AttrType::SourceFile:
-        log_fatal("IMPLEMENT SourceFile parser!!!");
-        break;
+    {
+        std::unique_ptr<SourceFileAttrInfo> sourcefile_attr{
+            std::make_unique<SourceFileAttrInfo>(attr_name_index)
+        };
+        parse_attr_sourcefile(*sourcefile_attr, const_pool);
+        return sourcefile_attr;
+    }
 
     case AttrType::SourceDebugExtension:
         log_fatal("IMPLEMENT SourceDebugExtension parser!!!");
@@ -639,4 +644,21 @@ std::vector<LineNumberTableEntry> ClassFileParser::parse_line_number_table()
     }
 
     return line_num_table;
+}
+
+// It's assumed that the `attribute_name_index` field bytes have been read and processed
+// to determine the specific type of the attribute, so those bytes are skipped.
+void ClassFileParser::parse_attr_sourcefile(
+            SourceFileAttrInfo& sourcefile_attr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+{
+    m_reader.read_u4(); // deliberately skipping `attribute_length`
+    u2 sourcefile_index{ m_reader.read_u2() };
+    // TODO: VALIDATE that:
+    //       - the value of the `sourcefile_index` item MUST be a valid index into the
+    //         `constant_pool` table.
+    //       - the `constant_pool` entry at that index MUST be a `CONSTANT_Utf8_info`
+    //         structure representing a string.
+
+    sourcefile_attr.sourcefile_index = sourcefile_index;
 }
