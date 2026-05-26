@@ -467,8 +467,13 @@ ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& 
         break;
 
     case AttrType::LineNumberTable:
-        log_fatal("IMPLEMENT LineNumberTable parser!!!");
-        break;
+    {
+        std::unique_ptr<LineNumberTableAttrInfo> line_number_table_attr{
+            std::make_unique<LineNumberTableAttrInfo>(attr_name_index)
+        };
+        parse_attr_line_number_table(*line_number_table_attr, const_pool);
+        return line_number_table_attr;
+    }
 
     case AttrType::LocalVariableTable:
         log_fatal("IMPLEMENT LocalVariableTable parser!!!");
@@ -607,4 +612,31 @@ std::vector<ExceptionTableEntry> ClassFileParser::parse_exception_table()
     }
 
     return exception_table;
+}
+
+// It's assumed that the `attribute_name_index` field bytes have been read and processed
+// to determine the specific type of the attribute, so those bytes are skipped.
+void ClassFileParser::parse_attr_line_number_table(
+            LineNumberTableAttrInfo& line_number_table_attr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+{
+    m_reader.read_u4(); // deliberately skipping `attribute_length`
+    line_number_table_attr.line_number_table = parse_line_number_table();
+}
+
+std::vector<LineNumberTableEntry> ClassFileParser::parse_line_number_table()
+{
+    u2 line_number_table_length{ m_reader.read_u2() };
+    std::vector<LineNumberTableEntry> line_num_table;
+    line_num_table.reserve(line_number_table_length);
+
+    for (u2 i{0}; i < line_number_table_length; i++)
+    {
+        u2 start_pc{ m_reader.read_u2() };
+        u2 line_number{ m_reader.read_u2() };
+
+        line_num_table.emplace_back(start_pc, line_number);
+    }
+
+    return line_num_table;
 }

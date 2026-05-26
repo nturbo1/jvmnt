@@ -167,4 +167,39 @@ struct CodeAttrInfo
     CodeAttrInfo(u2 attr_name_idx);
 };
 
+struct LineNumberTableEntry
+{
+    u2 start_pc;
+    u2 line_number;
+
+    LineNumberTableEntry(u2 start, u2 line_num);
+};
+
+/*
+ * The `LineNumberTable` attribute is an optional variable-length attribute
+ * in the attributes table of a Code attribute. It may be used by debuggers
+ * to determine which part of the code array corresponds to a given line
+ * number in the original source file.
+ *
+ * The `LineNumberTable` attribute has the following format:
+ *
+ *     LineNumberTable_attribute {
+ *         u2 attribute_name_index;
+ *         u4 attribute_length;
+ *         u2 line_number_table_length;
+ *
+ *         {
+ *             u2 start_pc;
+ *             u2 line_number;
+ *         } line_number_table[line_number_table_length];
+ *     }
+ */
+struct LineNumberTableAttrInfo
+    : AttrInfo
+{
+    std::vector<LineNumberTableEntry> line_number_table;
+
+    LineNumberTableAttrInfo(u2 attr_name_idx);
+};
+
 #endif // PARSER_ATTRIBUTES_H

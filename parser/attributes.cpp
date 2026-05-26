@@ -12,6 +12,10 @@ CodeAttrInfo::CodeAttrInfo(u2 attr_name_idx)
     : AttrInfo(attr_name_idx)
 {}
 
+LineNumberTableAttrInfo::LineNumberTableAttrInfo(u2 attr_name_idx)
+    : AttrInfo(attr_name_idx)
+{}
+
 AttrType resolve_attr_type(
         const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool,
         u2 attr_name_index)
@@ -75,4 +79,9 @@ ExceptionTableEntry::ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catch_
     end_pc{ end },
     handler_pc{ handler },
     catch_type{ catch_t }
+{}
+
+LineNumberTableEntry::LineNumberTableEntry(u2 start, u2 line_num)
+    : start_pc{ start },
+    line_number{ line_num }
 {}
