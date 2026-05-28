@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <cstddef>
 
-static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& indent)
+static void print_const_pool_entry(std::ostream& os, const ConstPoolEntry& e, const std::string& indent)
 {
     os << indent << "{" << "\n"
        << indent << "\ttag: " << e.tag << ",\n";
@@ -92,15 +92,102 @@ static void print(std::ostream& os, const ConstPoolEntry& e, const std::string& 
     os << indent << "},\n";
 }
 
-static void print(
+static void print_exception_table_entry(
+        std::ostream& os,
+        const ExceptionTableEntry& ete,
+        const std::string& indent)
+{
+    os << indent << "{\n"
+       << std::hex
+       << indent << "\tstart_pc: " << ete.start_pc << ",\n"
+       << indent << "\tend_pc: " << ete.end_pc << ",\n"
+       << indent << "\thandler_pc: " << ete.handler_pc << ",\n"
+       << std::dec
+       << indent << "\tcatch_type: " << ete.catch_type << "\n"
+       << indent << "}";
+}
+
+static void print_attr(
+        std::ostream& os,
+        const AttrInfo& ai,
+        const std::string& indent,
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+static void print_code_attr(
+        std::ostream& os,
+        const CodeAttrInfo& cai,
+        const std::string& indent,
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+{
+    os << indent << "{\n"
+       << indent << "\tattr_name_index: " << cai.attr_name_index << ",\n"
+       << indent << "\tmax_stack: " << cai.max_stack << ",\n"
+       << indent << "\tmax_locals: " << cai.max_locals << ",\n"
+       << indent << "\tcode: ";
+
+    std::size_t code_size{ cai.code.size() };
+    if (code_size > 0)
+    {
+        os << "[";
+        for (std::size_t i{0}; i < code_size - 1; i++)
+        {
+            os << cai.code[i] << ", ";
+        }
+        os << cai.code[code_size - 1] << "],\n";
+    }
+    else
+    {
+        os << "[],\n";
+    }
+
+    os << indent << "\texception_table: ";
+    std::size_t exception_table_size{ cai.exception_table.size() };
+    if (exception_table_size > 0)
+    {
+        os << "[\n";
+        std::string ete_indent{ indent + "\t\t" };
+        for (std::size_t i{0}; i < exception_table_size - 1; i++)
+        {
+            print_exception_table_entry(os, cai.exception_table[i], ete_indent);
+            os << ",\n";
+        }
+        print_exception_table_entry(os, cai.exception_table[exception_table_size - 1], ete_indent);
+        os << "\n" << indent << "],\n";
+    }
+    else
+    {
+        os << "[],\n";
+    }
+
+    os << indent << "\tattributes: ";
+    std::size_t attributes_size{ cai.attributes.size() };
+    if (attributes_size > 0)
+    {
+        os << "[\n";
+        std::string ete_indent{ indent + "\t\t" };
+        for (std::size_t i{0}; i < attributes_size - 1; i++)
+        {
+            print_attr(os, *(cai.attributes[i]), ete_indent, const_pool);
+            os << ",\n";
+        }
+        print_attr(os, *(cai.attributes[attributes_size - 1]), ete_indent, const_pool);
+        os << "\n" << indent << "],\n";
+    }
+    else
+    {
+        os << "[],\n";
+    }
+
+    // CodeAttrInfo closing brace
+    os << indent << "}";
+}
+
+static void print_attr(
         std::ostream& os,
         const AttrInfo& ai,
         const std::string& indent,
         const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
 {
-    os << indent << "{\n"
-       << indent << "\tattr_name_index: " << ai.attr_name_index << ",\n";
-
     AttrType attr_type{ resolve_attr_type(const_pool, ai.attr_name_index) };
     switch (attr_type)
     {
@@ -110,7 +197,7 @@ static void print(
 
     case AttrType::Code:
     {
-        log_fixme("IMPLEMENT Code attribute print logic!!!");
+        print_code_attr(os, static_cast<const CodeAttrInfo&>(ai), indent, const_pool);
         break;
     }
 
@@ -205,11 +292,9 @@ static void print(
     default:
         log_error("Unknown `AttrType` enum value: %d", attr_type);
     }
-
-    os << indent << "}";
 }
 
-static void print(
+static void print_field(
         std::ostream& os,
         const FieldInfo& fi,
         const std::string& indent,
@@ -227,10 +312,10 @@ static void print(
         os << "[\n";
         for (std::size_t i{0}; i < attributes_size - 1; i++)
         {
-            print(os, *(fi.attributes[i]), indent + "\t\t", const_pool);
+            print_attr(os, *(fi.attributes[i]), indent + "\t\t", const_pool);
             os << ",\n";
         }
-        print(os, *(fi.attributes[attributes_size - 1]), indent + "\t\t", const_pool);
+        print_attr(os, *(fi.attributes[attributes_size - 1]), indent + "\t\t", const_pool);
         os << "\n" << indent << "\t],\n";
     }
     else
@@ -242,7 +327,7 @@ static void print(
     os << indent << "}";
 }
 
-static void print(
+static void print_method(
         std::ostream& os,
         const MethodInfo& mi,
         const std::string& indent,
@@ -258,12 +343,13 @@ static void print(
     if (attributes_size > 0)
     {
         os << "[\n";
+        std::string attr_elem_indent{ indent + "\t\t" };
         for (std::size_t i{0}; i < attributes_size - 1; i++)
         {
-            print(os, *(mi.attributes[i]), indent + "\t\t", const_pool);
+            print_attr(os, *(mi.attributes[i]), attr_elem_indent, const_pool);
             os << ",\n";
         }
-        print(os, *(mi.attributes[attributes_size - 1]), indent + "\t\t", const_pool);
+        print_attr(os, *(mi.attributes[attributes_size - 1]), attr_elem_indent, const_pool);
         os << "\n" << indent << "\t],\n";
     }
     else
@@ -289,7 +375,7 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[\n";
         for (std::size_t i{0}; i < cf.const_pool.size(); i++)
         {
-            print(os, *cf.const_pool[i], "\t\t");
+            print_const_pool_entry(os, *cf.const_pool[i], "\t\t");
         }
         os << "\t],\n";
     }
@@ -321,10 +407,10 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[\n";
         for (std::size_t i{0}; i < fields_size - 1; i++)
         {
-            print(os, cf.fields[i], "\t\t", cf.const_pool);
+            print_field(os, cf.fields[i], "\t\t", cf.const_pool);
             os << ",\n";
         }
-        print(os, cf.fields[fields_size - 1], "\t\t", cf.const_pool);
+        print_field(os, cf.fields[fields_size - 1], "\t\t", cf.const_pool);
         os << "\n\t],\n";
     }
     else
@@ -339,10 +425,10 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[\n";
         for (std::size_t i{0}; i < methods_size - 1; i++)
         {
-            print(os, cf.methods[i], "\t\t", cf.const_pool);
+            print_method(os, cf.methods[i], "\t\t", cf.const_pool);
             os << ",\n";
         }
-        print(os, cf.methods[methods_size - 1], "\t\t", cf.const_pool);
+        print_method(os, cf.methods[methods_size - 1], "\t\t", cf.const_pool);
         os << "\n\t],\n";
     }
     else
@@ -357,10 +443,10 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[\n";
         for (std::size_t i{0}; i < attributes_size - 1; i++)
         {
-            print(os, *(cf.attributes[i]), "\t\t", cf.const_pool);
+            print_attr(os, *(cf.attributes[i]), "\t\t", cf.const_pool);
             os << ",\n";
         }
-        print(os, *(cf.attributes[attributes_size - 1]), "\t\t", cf.const_pool);
+        print_attr(os, *(cf.attributes[attributes_size - 1]), "\t\t", cf.const_pool);
         os << "\n\t],\n";
     }
     else
