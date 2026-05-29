@@ -182,6 +182,48 @@ static void print_code_attr(
     os << indent << "}";
 }
 
+static void print_linenumbertable_entry(
+        std::ostream& os,
+        const LineNumberTableEntry& lnte,
+        const std::string& indent)
+{
+    os << indent << "{\n"
+       << indent << "\tstart_pc: " << lnte.start_pc << ",\n"
+       << indent << "\tline_number: " << lnte.line_number << "\n"
+       << indent << "}";
+}
+
+static void print_linenumbertable_attr(
+        std::ostream& os,
+        const LineNumberTableAttrInfo& lntai,
+        const std::string& indent,
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+{
+    os << indent << "{\n"
+       << indent << "\tline_number_table: ";
+
+    std::size_t line_number_table_size{ lntai.line_number_table.size() };
+    if (line_number_table_size > 0)
+    {
+        os << "[\n";
+        std::string lnte_indent{ indent + "\t\t" };
+        for (std::size_t i{0}; i < line_number_table_size - 1; i++)
+        {
+            print_linenumbertable_entry(os, lntai.line_number_table[i], lnte_indent);
+            os << ",\n";
+        }
+        print_linenumbertable_entry(os, lntai.line_number_table[line_number_table_size - 1], lnte_indent);
+        os << "\n" << indent << "],\n";
+    }
+    else
+    {
+        os << "[],\n";
+    }
+
+    // LineNumberTableAttr closing brace
+    os << indent << "}";
+}
+
 static void print_attr(
         std::ostream& os,
         const AttrInfo& ai,
@@ -273,7 +315,7 @@ static void print_attr(
 
     case AttrType::LineNumberTable:
     {
-        log_fixme("IMPLEMENT LineNumberTable attribute print logic!!!");
+        print_linenumbertable_attr(os, static_cast<const LineNumberTableAttrInfo&>(ai), indent, const_pool);
         break;
     }
 
