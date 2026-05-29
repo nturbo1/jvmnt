@@ -200,6 +200,7 @@ static void print_linenumbertable_attr(
         const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
 {
     os << indent << "{\n"
+       << indent << "\tattr_name_index: " << lntai.attr_name_index << ",\n"
        << indent << "\tline_number_table: ";
 
     std::size_t line_number_table_size{ lntai.line_number_table.size() };
