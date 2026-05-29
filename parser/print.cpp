@@ -129,11 +129,13 @@ static void print_code_attr(
     if (code_size > 0)
     {
         os << "[";
+        os << std::hex;
         for (std::size_t i{0}; i < code_size - 1; i++)
         {
-            os << cai.code[i] << ", ";
+            os << static_cast<u4>(cai.code[i]) << ", ";
         }
-        os << cai.code[code_size - 1] << "],\n";
+        os << static_cast<u4>(cai.code[code_size - 1]) << "],\n";
+        os << std::dec;
     }
     else
     {
