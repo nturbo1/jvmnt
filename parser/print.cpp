@@ -224,6 +224,18 @@ static void print_linenumbertable_attr(
     os << indent << "}";
 }
 
+static void print_sourcefile_attr(
+        std::ostream& os,
+        const SourceFileAttrInfo& sfai,
+        const std::string& indent,
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+{
+    os << indent << "{\n"
+       << indent << "\tattr_name_index: " << sfai.attr_name_index << ",\n"
+       << indent << "\tsourcefile_index: " << sfai.sourcefile_index << ",\n"
+       << indent << "}";
+}
+
 static void print_attr(
         std::ostream& os,
         const AttrInfo& ai,
@@ -305,7 +317,7 @@ static void print_attr(
 
     case AttrType::SourceFile:
     {
-        log_fixme("IMPLEMENT SourceFile attribute print logic!!!");
+        print_sourcefile_attr(os, static_cast<const SourceFileAttrInfo&>(ai), indent, const_pool);
         break;
     }
 
