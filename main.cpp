@@ -9,7 +9,8 @@
 
 int main()
 {
-    std::ifstream class_file_src{"Main.class", std::ios::binary };
+    std::string src_file{ "Main.class" };
+    std::ifstream class_file_src{ src_file, std::ios::binary };
 
     if (class_file_src.fail())
         log_fatal("Failed to open the class file.");
@@ -17,7 +18,7 @@ int main()
     log_debug("Successfully opened the class file.");
 
     ClassFileReader cf_reader{ class_file_src };
-    ClassFileParser cf_parser{ cf_reader };
+    ClassFileParser cf_parser{ cf_reader, src_file };
 
     ClassFile cf{ cf_parser.parse() };
 

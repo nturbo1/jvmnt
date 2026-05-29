@@ -69,7 +69,7 @@ AttrType resolve_attr_type(
 
     std::string_view attr_name(
         reinterpret_cast<const char*>(const_utf8->bytes.data()),
-            const_utf8->bytes.size()
+        const_utf8->bytes.size()
     );
     auto it = attr_type_table.find(attr_name);
 

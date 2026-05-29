@@ -18,10 +18,16 @@ ClassFileParser::ClassFileParser(ClassFileReader& reader)
     : m_reader{ reader }
 {}
 
+ClassFileParser::ClassFileParser(ClassFileReader& reader, const std::string& filename)
+    : m_reader{ reader },
+    m_filename{ filename }
+{}
+
 ClassFile ClassFileParser::parse()
 {
     u4 magic{ m_reader.read_u4() };
-    // TODO: Validate the magic number!
+    if (magic != CLASS_FILE_MAGIC)
+        log_fatal("Incompatible magic value %d in class file %s", magic, m_filename.c_str());
 
     u2 minor_version{ m_reader.read_u2() };
     u2 major_version{ m_reader.read_u2() };
