@@ -152,7 +152,7 @@ static void print_code_attr(
             os << ",\n";
         }
         print_exception_table_entry(os, cai.exception_table[exception_table_size - 1], ete_indent);
-        os << "\n" << indent << "],\n";
+        os << "\n\t" << indent << "],\n";
     }
     else
     {
@@ -171,7 +171,7 @@ static void print_code_attr(
             os << ",\n";
         }
         print_attr(os, *(cai.attributes[attributes_size - 1]), ete_indent, const_pool);
-        os << "\n" << indent << "],\n";
+        os << "\n\t" << indent << "],\n";
     }
     else
     {
@@ -214,7 +214,7 @@ static void print_linenumbertable_attr(
             os << ",\n";
         }
         print_linenumbertable_entry(os, lntai.line_number_table[line_number_table_size - 1], lnte_indent);
-        os << "\n" << indent << "],\n";
+        os << "\n\t" << indent << "],\n";
     }
     else
     {
@@ -371,7 +371,7 @@ static void print_field(
             os << ",\n";
         }
         print_attr(os, *(fi.attributes[attributes_size - 1]), indent + "\t\t", const_pool);
-        os << "\n" << indent << "\t],\n";
+        os << "\n\t" << indent << "\t],\n";
     }
     else
     {
