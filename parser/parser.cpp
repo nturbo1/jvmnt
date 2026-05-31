@@ -2,7 +2,6 @@
 
 #include "class_file.h"
 #include "base.h"
-#include "class_file_validation.h"
 #include "attributes.h"
 
 #include <string>
@@ -387,8 +386,6 @@ std::unique_ptr<AttrInfo>
 ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
 {
     u2 attr_name_index{ m_reader.read_u2() };
-    validate_const_pool_index(const_pool, attr_name_index);
-
     AttrType attr_type{ resolve_attr_type(const_pool, attr_name_index) };
 
     switch (attr_type)

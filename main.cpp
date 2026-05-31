@@ -1,7 +1,7 @@
 #include "parser/parser.h"
 
 #include "base.h"
-#include "parser/class_file.h"
+#include "class_file/class_file.h"
 
 #include <iostream>
 #include <fstream>

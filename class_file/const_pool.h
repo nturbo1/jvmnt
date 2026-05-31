@@ -1,5 +1,5 @@
-#ifndef PARSER_CONST_POOL_H
-#define PARSER_CONST_POOL_H
+#ifndef CLASS_FILE_CONST_POOL_H
+#define CLASS_FILE_CONST_POOL_H
 
 #include "base.h"
 
@@ -185,4 +185,4 @@ struct ConstNameAndTypeInfo
     ConstNameAndTypeInfo(ConstPoolEntryTag t, u2 name_idx, u2 descriptor_idx);
 };
 
-#endif // PARSER_CONST_POOL_H
+#endif // CLASS_FILE_CONST_POOL_H

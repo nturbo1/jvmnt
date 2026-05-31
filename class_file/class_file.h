@@ -1,5 +1,5 @@
-#ifndef PARSER_CLASS_FILE_H
-#define PARSER_CLASS_FILE_H
+#ifndef CLASS_FILE_CLASS_FILE_H
+#define CLASS_FILE_CLASS_FILE_H
 
 #include "base.h"
 #include "const_pool.h"
@@ -174,4 +174,4 @@ struct ClassFile
     const std::vector<std::unique_ptr<AttrInfo>> attributes;
 };
 
-#endif // PARSER_CLASS_FILE_H
+#endif // CLASS_FILE_CLASS_FILE_H

@@ -1,5 +1,5 @@
-#ifndef PARSER_ATTRIBUTES_H
-#define PARSER_ATTRIBUTES_H
+#ifndef CLASS_FILE_ATTRIBUTES_H
+#define CLASS_FILE_ATTRIBUTES_H
 
 #include "base.h"
 #include "const_pool.h"
@@ -236,4 +236,4 @@ struct SourceFileAttrInfo
     SourceFileAttrInfo(u2 attr_name_idx);
 };
 
-#endif // PARSER_ATTRIBUTES_H
+#endif // CLASS_FILE_ATTRIBUTES_H
