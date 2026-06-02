@@ -33,23 +33,7 @@ void ClassFile::format_check()
     // TODO: Validate the version support!      About `m_minor_version` and `m_major_version`
 
     check_this_class();
-
-    // TODO: VALIDATE that:
-    //       - for a class, the value of the `super_class` item either MUST be zero or
-    //         MUST be a valid index into the `constant_pool` table.
-    //
-    //       - if the value of the `super_class` item is nonzero, the `constant_pool`
-    //         entry at that index MUST be a `CONSTANT_Class_info` structure representing
-    //         the direct superclass of the class defined by this class file. Neither the
-    //         direct superclass nor any of its superclasses may have the `ACC_FINAL` flag
-    //         set in the `access_flags` item of its `ClassFile` structure.
-    //
-    //       - if the value of the `super_class` item is zero, then this class file MUST represent
-    //         the class `Object`, the only class or interface without a direct superclass.
-    //
-    //       - for an interface, the value of the `super_class` item MUST always be a valid
-    //         index into the `constant_pool` table. The `constant_pool` entry at that index
-    //         MUST be a `CONSTANT_Class_info` structure representing the class `Object`.
+    check_super_class();
 
     // TODO: VALIDATE that:
     //       - each value in the `interfaces` array must be a valid index into the
@@ -59,6 +43,101 @@ void ClassFile::format_check()
     //         representing an interface that is a direct superinterface of this
     //         class or interface type, in the left-to-right order given in the
     //         source for the type.
+}
+
+void ClassFile::check_this_class()
+{
+    check_const_pool_index_type_const_class(m_this_class);
+    std::string_view class_name(m_filename.begin(), m_filename.end() - 6);
+    ConstClassInfo* const_class{ dynamic_cast<ConstClassInfo*>(m_const_pool.at(m_this_class - 1).get()) };
+    assert(const_class != nullptr &&
+            "The constant pool entry was not type checked for `ConstClassInfo` struct.");
+
+    u2 class_name_index{ const_class->name_index };
+    check_const_pool_index_type_const_utf8(class_name_index);
+    ConstUtf8Info* const_utf8{ dynamic_cast<ConstUtf8Info*>(m_const_pool.at(class_name_index - 1).get()) };
+    assert(const_utf8 != nullptr &&
+            "The constant pool entry was not type checked for `ConstUtf8Info` struct.");
+
+    std::string_view const_class_name(
+            reinterpret_cast<const char*>(const_utf8->bytes.data()),
+            const_utf8->bytes.size()
+    );
+
+    if (const_class_name != class_name)
+        log_fatal("Class filename %s and class name %s don't match.", m_filename, const_class_name);
+}
+
+void ClassFile::check_super_class()
+{
+    bool is_interface{
+        static_cast<bool>( m_access_flags & static_cast<const u2>(AccMasks::ACC_INTERFACE) )
+    };
+
+    if (m_super_class == 0)
+    {
+        if (is_interface)
+            log_fatal("In class file %s: For an interface, the value of the `super_class` item"
+                    " MUST always be a valid index into the `constant_pool` table.",
+                    m_filename);
+
+        // Assumes the `this_class` field of the `ClassFile` structure is already checked.
+        ConstClassInfo* this_class_info {
+            dynamic_cast<ConstClassInfo*>(m_const_pool.at(m_this_class - 1).get())
+        };
+        assert(this_class_info != nullptr &&
+                "The `this_class` field of `ClassFile` structure must have been format "
+                "checked already!");
+
+        ConstUtf8Info* const_utf8_info {
+            dynamic_cast<ConstUtf8Info*>(m_const_pool.at(this_class_info->name_index - 1).get())
+        };
+        assert(const_utf8_info != nullptr &&
+                "The `this_class` field of `ClassFile` structure must have been format "
+                "checked already!");
+
+        std::string_view this_class_name(
+                reinterpret_cast<const char*>(const_utf8_info->bytes.data()),
+                const_utf8_info->bytes.size()
+        );
+
+        if (this_class_name != std::string_view("Object"))
+            log_fatal(
+                    "In class file %s: Only Object class can have NO direct superclass.",
+                    m_filename.c_str()
+            );
+    }
+    else
+    {
+        check_const_pool_index_type_const_class(m_super_class);
+        ConstClassInfo* super_class_info {
+            static_cast<ConstClassInfo*>(m_const_pool.at(m_super_class - 1).get())
+        };
+        check_const_pool_index_type_const_utf8(super_class_info->name_index);
+        ConstUtf8Info* super_class_const_utf8_info {
+            static_cast<ConstUtf8Info*>(m_const_pool.at(super_class_info->name_index - 1).get())
+        };
+        if (is_interface)
+        {
+            std::string_view super_class_name(
+                    reinterpret_cast<const char*>(super_class_const_utf8_info->bytes.data()),
+                    super_class_const_utf8_info->bytes.size()
+            );
+
+            if (super_class_name != std::string_view("Object"))
+                log_fatal(
+                    "In class file %s: For an interface, the `constant_pool` entry at index "
+                    "`super_class` MUST be a `CONSTANT_Class_info` structure representing the "
+                    "class `Object`",
+                    m_filename.c_str()
+                );
+        }
+
+        // TODO: Check that:
+        //       neither the direct superclass nor any of its superclasses may have
+        //       the `ACC_FINAL` flag set in the `access_flags` item of its `ClassFile`
+        //       structure.
+    }
 }
 
 void ClassFile::check_const_pool_index(std::size_t index)
@@ -89,27 +168,4 @@ void ClassFile::check_const_pool_index_type_const_utf8(std::size_t index)
                 "to be of type CONSTANT_Utf8",
                 m_filename.c_str(),
                 index);
-}
-
-void ClassFile::check_this_class()
-{
-    check_const_pool_index_type_const_class(m_this_class);
-    std::string_view class_name(m_filename.begin(), m_filename.end() - 6);
-    ConstClassInfo* const_class{ dynamic_cast<ConstClassInfo*>(m_const_pool.at(m_this_class - 1).get()) };
-    assert(const_class != nullptr &&
-            "The constant pool entry was not type checked for `ConstClassInfo` struct.");
-
-    u2 class_name_index{ const_class->name_index };
-    check_const_pool_index_type_const_utf8(class_name_index);
-    ConstUtf8Info* const_utf8{ dynamic_cast<ConstUtf8Info*>(m_const_pool.at(class_name_index - 1).get()) };
-    assert(const_utf8 != nullptr &&
-            "The constant pool entry was not type checked for `ConstUtf8Info` struct.");
-
-    std::string_view const_class_name(
-            reinterpret_cast<const char*>(const_utf8->bytes.data()),
-            const_utf8->bytes.size()
-    );
-
-    if (const_class_name != class_name)
-        log_fatal("Class filename %s and class name %s don't match.", m_filename, const_class_name);
 }

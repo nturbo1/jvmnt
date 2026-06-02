@@ -203,6 +203,41 @@ public:
     void format_check();
 
     /*
+     * Checks if:
+     *     - the value of the `this_class` item is a valid index into the
+     *       `constant_pool` table.
+     *
+     *     - the `constant_pool` entry at that index is a `CONSTANT_Class_info`
+     *       structure representing the class or interface defined by this class file.
+     *
+     * If any of the above checks fails, then throws a `std::runtime_error` exception,
+     * which should not be caught leading to the termination of the program.
+     */
+    void check_this_class();
+
+    /*
+     * Checks if:
+     *      - the value of the `super_class` item is either zero or a valid index into
+     *        the `constant_pool` table.
+     *
+     *      - in case the value of the `super_class` item is nonzero, the `constant_pool`
+     *        entry at that index is a `CONSTANT_Class_info` structure representing
+     *        the direct superclass of the class defined by this class file.
+     *
+     *        Neither the
+     *        direct superclass nor any of its superclasses may have the `ACC_FINAL` flag
+     *        set in the `access_flags` item of its `ClassFile` structure.
+     *
+     *      - if the value of the `super_class` item is zero, then this class file MUST represent
+     *        the class `Object`, the only class or interface without a direct superclass.
+     *
+     *      - for an interface, the value of the `super_class` item MUST always be a valid
+     *        index into the `constant_pool` table. The `constant_pool` entry at that index
+     *        MUST be a `CONSTANT_Class_info` structure representing the class `Object`.
+     */
+    void check_super_class();
+
+    /*
      * Checks whether a given `index` is a valid index into the given `const_pool`.
      *
      * If the `index` is invalid, then throws a `std::runtime_error` exception,
@@ -221,19 +256,6 @@ public:
     void check_const_pool_index_type_const_class(std::size_t index);
 
     /*
-     * Checks if:
-     *     - the value of the `this_class` item is a valid index into the
-     *       `constant_pool` table.
-     *
-     *     - the `constant_pool` entry at that index is a `CONSTANT_Class_info`
-     *       structure representing the class or interface defined by this class file.
-     *
-     * If any of the above checks fails, then throws a `std::runtime_error` exception,
-     * which should not be caught leading to the termination of the program.
-     */
-    void check_this_class();
-
-    /*
      * Check whether the `constant_pool` entry at that index is a `CONSTANT_Utf8_info`
      * structure.
      *
@@ -242,6 +264,27 @@ public:
      * termination of the program.
      */
     void check_const_pool_index_type_const_utf8(std::size_t index);
+};
+
+enum class AccMasks
+{
+    ACC_PUBLIC = 0x0001, // Declared public; may be accessed from outside its
+                        // package.
+
+    ACC_FINAL = 0x0010, // Declared final; no subclasses allowed.
+
+    ACC_SUPER = 0x0020, // Treat superclass methods specially when invoked by
+                        // the invokespecial instruction.
+
+    ACC_INTERFACE = 0x0200, // Is an interface, not a class.
+
+    ACC_ABSTRACT = 0x0400, // Declared abstract; must not be instantiated.
+
+    ACC_SYNTHETIC = 0x1000, // Declared synthetic; not present in the source code.
+
+    ACC_ANNOTATION = 0x2000, // Declared as an annotation type.
+
+    ACC_ENUM = 0x4000 // Declared as an enum type.
 };
 
 #endif // CLASS_FILE_CLASS_FILE_H
