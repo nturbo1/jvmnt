@@ -421,18 +421,18 @@ static void print_method(
 std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
 {
     os << "{\n"
-       << "\tmagic: " << std::hex << "0x" << cf.magic << ",\n"
+       << "\tm_magic: " << std::hex << "0x" << cf.m_magic << ",\n"
        << std::dec
-       << "\tminor_version: " << cf.minor_version << ",\n"
-       << "\tmajor_version: " << cf.major_version << ",\n";
+       << "\tm_minor_version: " << cf.m_minor_version << ",\n"
+       << "\tm_major_version: " << cf.m_major_version << ",\n";
 
-    os << "\tconst_pool: ";
-    if (cf.const_pool.size() > 0)
+    os << "\tm_const_pool: ";
+    if (cf.m_const_pool.size() > 0)
     {
         os << "[\n";
-        for (std::size_t i{0}; i < cf.const_pool.size(); i++)
+        for (std::size_t i{0}; i < cf.m_const_pool.size(); i++)
         {
-            print_const_pool_entry(os, *cf.const_pool[i], "\t\t");
+            print_const_pool_entry(os, *cf.m_const_pool[i], "\t\t");
         }
         os << "\t],\n";
     }
@@ -441,33 +441,33 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[],\n";
     }
 
-    os << "\taccess_flags: " << std::hex << "0x" << cf.access_flags << "\n" << std::dec;
-    os << "\tthis_class: " << cf.this_class << "\n";
-    os << "\tsuper_class: " << cf.super_class << "\n";
+    os << "\tm_access_flags: " << std::hex << "0x" << cf.m_access_flags << "\n" << std::dec;
+    os << "\tm_this_class: " << cf.m_this_class << "\n";
+    os << "\tm_super_class: " << cf.m_super_class << "\n";
 
-    os << "\tinterfaces: [";
-    std::size_t interfaces_size{ cf.interfaces.size() };
+    os << "\tm_interfaces: [";
+    std::size_t interfaces_size{ cf.m_interfaces.size() };
     if (interfaces_size > 0)
     {
         for (std::size_t i{0}; i < interfaces_size - 1; i++)
         {
-            os << cf.interfaces[i] << ", ";
+            os << cf.m_interfaces[i] << ", ";
         }
-        os << cf.interfaces[interfaces_size - 1];
+        os << cf.m_interfaces[interfaces_size - 1];
     }
     os << "],\n";
 
-    os << "\tfields: ";
-    std::size_t fields_size{ cf.fields.size() };
+    os << "\tm_fields: ";
+    std::size_t fields_size{ cf.m_fields.size() };
     if (fields_size > 0)
     {
         os << "[\n";
         for (std::size_t i{0}; i < fields_size - 1; i++)
         {
-            print_field(os, cf.fields[i], "\t\t", cf.const_pool);
+            print_field(os, cf.m_fields[i], "\t\t", cf.m_const_pool);
             os << ",\n";
         }
-        print_field(os, cf.fields[fields_size - 1], "\t\t", cf.const_pool);
+        print_field(os, cf.m_fields[fields_size - 1], "\t\t", cf.m_const_pool);
         os << "\n\t],\n";
     }
     else
@@ -475,17 +475,17 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[],\n";
     }
 
-    os << "\tmethods: ";
-    std::size_t methods_size{ cf.methods.size() };
+    os << "\tm_methods: ";
+    std::size_t methods_size{ cf.m_methods.size() };
     if (methods_size > 0)
     {
         os << "[\n";
         for (std::size_t i{0}; i < methods_size - 1; i++)
         {
-            print_method(os, cf.methods[i], "\t\t", cf.const_pool);
+            print_method(os, cf.m_methods[i], "\t\t", cf.m_const_pool);
             os << ",\n";
         }
-        print_method(os, cf.methods[methods_size - 1], "\t\t", cf.const_pool);
+        print_method(os, cf.m_methods[methods_size - 1], "\t\t", cf.m_const_pool);
         os << "\n\t],\n";
     }
     else
@@ -493,17 +493,17 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[],\n";
     }
 
-    os << "\tattributes: ";
-    std::size_t attributes_size{ cf.attributes.size() };
+    os << "\tm_attributes: ";
+    std::size_t attributes_size{ cf.m_attributes.size() };
     if (attributes_size > 0)
     {
         os << "[\n";
         for (std::size_t i{0}; i < attributes_size - 1; i++)
         {
-            print_attr(os, *(cf.attributes[i]), "\t\t", cf.const_pool);
+            print_attr(os, *(cf.m_attributes[i]), "\t\t", cf.m_const_pool);
             os << ",\n";
         }
-        print_attr(os, *(cf.attributes[attributes_size - 1]), "\t\t", cf.const_pool);
+        print_attr(os, *(cf.m_attributes[attributes_size - 1]), "\t\t", cf.m_const_pool);
         os << "\n\t],\n";
     }
     else

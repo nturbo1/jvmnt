@@ -92,7 +92,8 @@ ClassFile ClassFileParser::parse()
             interfaces,
             std::move(fields),
             std::move(methods),
-            std::move(attributes)
+            std::move(attributes),
+            m_filename
     };
 }
 

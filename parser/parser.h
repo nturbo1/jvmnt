@@ -9,14 +9,16 @@
 class ClassFileParser
 {
 public:
+    const std::string m_filename;
+
     explicit ClassFileParser(ClassFileReader& reader);
     explicit ClassFileParser(ClassFileReader& reader, const std::string& filename);
 
     ClassFile parse();
 
+
 private:
     ClassFileReader& m_reader;
-    std::string m_filename;
 
     std::vector<std::unique_ptr<ConstPoolEntry>> parse_const_pool();
     std::unique_ptr<ConstMethodrefInfo> parse_const_methodref_info(ConstPoolEntryTag tag);

@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 const u4 CLASS_FILE_MAGIC = 0xCAFEBABE;
 
@@ -104,6 +105,11 @@ struct MethodInfo
 };
 
 /*
+ * The `ClassFile` class contains information about the `ClassFile` structure,
+ * which is the layout of a `.class` file, and some additional related information.
+ *
+ * The `ClassFile` structure content:
+ *
  * ClassFile {
  *     u4 magic;
  *     u2 minor_version;
@@ -123,15 +129,22 @@ struct MethodInfo
  *     attribute_info attributes[attributes_count];
  * }
  */
-struct ClassFile
+class ClassFile
 {
-    const u4 magic;
-    const u2 minor_version;
-    const u2 major_version;
+public:
+    /*
+     * ===============================================================================
+     * ==================== The `ClassFile` structure information ====================
+     * ===============================================================================
+     */
 
-    const std::vector<std::unique_ptr<ConstPoolEntry>> const_pool;
+    const u4 m_magic;
+    const u2 m_minor_version;
+    const u2 m_major_version;
 
-    const u2 access_flags;
+    const std::vector<std::unique_ptr<ConstPoolEntry>> m_const_pool;
+
+    const u2 m_access_flags;
 
     /*
      * The value of the `this_class` item MUST be a valid index into the
@@ -139,7 +152,7 @@ struct ClassFile
      * `CONSTANT_Class_info` structure representing the class or interface
      * defined by this class file.
      */
-    const u2 this_class;
+    const u2 m_this_class;
 
     /*
      * For a class, the value of the `super_class` item either MUST be zero or
@@ -158,7 +171,7 @@ struct ClassFile
      * index into the `constant_pool` table. The `constant_pool` entry at that index
      * MUST be a `CONSTANT_Class_info` structure representing the class `Object`.
      */
-    const u2 super_class;
+    const u2 m_super_class;
 
     /*
      * Each value in the `interfaces` array MUST be a valid index into the
@@ -168,10 +181,18 @@ struct ClassFile
      * superinterface of this class or interface type, in the left-to-right order
      * given in the source for the type.
      */
-    const std::vector<u2> interfaces;
-    const std::vector<FieldInfo> fields;
-    const std::vector<MethodInfo> methods;
-    const std::vector<std::unique_ptr<AttrInfo>> attributes;
+    const std::vector<u2> m_interfaces;
+    const std::vector<FieldInfo> m_fields;
+    const std::vector<MethodInfo> m_methods;
+    const std::vector<std::unique_ptr<AttrInfo>> m_attributes;
+
+    /*
+     * ===============================================================================
+     * ======================== Some additional information ==========================
+     * ===============================================================================
+     */
+
+    const std::string m_filename; // name of the class file
 };
 
 #endif // CLASS_FILE_CLASS_FILE_H
