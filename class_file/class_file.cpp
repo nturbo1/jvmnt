@@ -21,3 +21,21 @@ MethodInfo::MethodInfo(
     descriptor_index{ descriptor_idx },
     attributes{ std::move(attrs) }
 {}
+
+void ClassFile::format_check()
+{
+}
+
+void ClassFile::check_const_pool_index(std::size_t index)
+{
+    if (index < 1 || m_const_pool.size() < index)
+        log_fatal("Invalid constant pool index: %zu", index);
+}
+
+void ClassFile::check_const_pool_index_type_const_class(std::size_t index)
+{
+}
+
+void ClassFile::check_this_class()
+{
+}

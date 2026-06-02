@@ -188,11 +188,53 @@ public:
 
     /*
      * ===============================================================================
-     * ======================== Some additional information ==========================
+     * =========================== Some additional stuff =============================
      * ===============================================================================
      */
 
     const std::string m_filename; // name of the class file
-};
+
+    /*
+     * Checks all the formatting criteria for a given class file structure.
+     *
+     * If any of the formattign criteria fails, then throws a `std::runtime_error`
+     * exception, which should not be caught leading to the termination of the program.
+     */
+    void format_check();
+
+    /*
+     * Checks whether a given `index` is a valid index into the given `const_pool`.
+     *
+     * If the `index` is invalid, then throws a `std::runtime_error` exception,
+     * which should not be caught leading to the termination of the program.
+     */
+    void check_const_pool_index(std::size_t index);
+
+    /*
+     * Check whether the `constant_pool` entry at that index is a `CONSTANT_Class_info`
+     * structure representing the class or interface defined by this class file.
+     *
+     * IT ASSUMES THAT THE GIVEN INDEX IS A VALID INDEX INTO THE `const_pool`,
+     * SO IT DOESN'T CHECK FOR THAT!
+     *
+     * If the entry at that index is of wrong type and/or format, then throws a
+     * `std::runtime_error` exception, which should not be caught leading to the
+     * termination of the program.
+     */
+    void check_const_pool_index_type_const_class(std::size_t index);
+
+    /*
+     * Checks if:
+     *     - the value of the `this_class` item is a valid index into the
+     *       `constant_pool` table.
+     *
+     *     - the `constant_pool` entry at that index is a `CONSTANT_Class_info`
+     *       structure representing the class or interface defined by this class file.
+     *
+     * If any of the above checks fails, then throws a `std::runtime_error` exception,
+     * which should not be caught leading to the termination of the program.
+     */
+    void check_this_class();
+    };
 
 #endif // CLASS_FILE_CLASS_FILE_H

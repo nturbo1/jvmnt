@@ -15,4 +15,3 @@ target_link_libraries(jvmnt
 add_subdirectory(parser)
 add_subdirectory(base)
 add_subdirectory(class_file)
-add_subdirectory(check)
