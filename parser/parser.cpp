@@ -30,34 +30,12 @@ ClassFile ClassFileParser::parse()
 
     u2 minor_version{ m_reader.read_u2() };
     u2 major_version{ m_reader.read_u2() };
-    // TODO: Validate the version support!
 
     std::vector<std::unique_ptr<ConstPoolEntry>> const_pool{ parse_const_pool() };
     u2 access_flags{ m_reader.read_u2() };
     u2 this_class{ m_reader.read_u2() };
-    // TODO: VALIDATE that:
-    //       - The value of the `this_class` item must be a valid index into the
-    //         `constant_pool` table. The `constant_pool` entry at that index must be a
-    //         `CONSTANT_Class_info` structure representing the class or interface
-    //         defined by this class file.
 
     u2 super_class{ m_reader.read_u2() };
-    // TODO: VALIDATE that:
-    //       - for a class, the value of the `super_class` item either MUST be zero or
-    //         MUST be a valid index into the `constant_pool` table.
-    //
-    //       - if the value of the `super_class` item is nonzero, the `constant_pool`
-    //         entry at that index MUST be a `CONSTANT_Class_info` structure representing
-    //         the direct superclass of the class defined by this class file. Neither the
-    //         direct superclass nor any of its superclasses may have the `ACC_FINAL` flag
-    //         set in the `access_flags` item of its `ClassFile` structure.
-    //
-    //       - if the value of the `super_class` item is zero, then this class file MUST represent
-    //         the class `Object`, the only class or interface without a direct superclass.
-    //
-    //       - for an interface, the value of the `super_class` item MUST always be a valid
-    //         index into the `constant_pool` table. The `constant_pool` entry at that index
-    //         MUST be a `CONSTANT_Class_info` structure representing the class `Object`.
 
     u2 interfaces_count{ m_reader.read_u2() };
     std::vector<u2> interfaces;
@@ -65,15 +43,6 @@ ClassFile ClassFileParser::parse()
     for (u2 i{0}; i < interfaces_count; ++i)
     {
         u2 intface{ m_reader.read_u2() };
-        // TODO: VALIDATE that:
-        //       - each value in the `interfaces` array must be a valid index into the
-        //         `constant_pool` table.
-        //       - the `constant_pool` entry at each value of `interfaces[i]`, where
-        //         `0 ≤ i < interfaces_count`, must be a `CONSTANT_Class_info` structure
-        //         representing an interface that is a direct superinterface of this
-        //         class or interface type, in the left-to-right order given in the
-        //         source for the type.
-
         interfaces.push_back(intface);
     }
 

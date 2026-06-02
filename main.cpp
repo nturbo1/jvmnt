@@ -9,21 +9,27 @@
 
 int main()
 {
-    std::string src_file{ "Main.class" };
-    std::ifstream class_file_src{ src_file, std::ios::binary };
+    try
+    {
+        std::string src_file{ "Main.class" };
+        std::ifstream class_file_src{ src_file, std::ios::binary };
 
-    if (class_file_src.fail())
-        log_fatal("Failed to open the class file.");
+        if (class_file_src.fail())
+            log_fatal("Failed to open the class file.");
 
-    log_debug("Successfully opened the class file.");
+        log_debug("Successfully opened the class file.");
 
-    ClassFileReader cf_reader{ class_file_src };
-    ClassFileParser cf_parser{ cf_reader, src_file };
+        ClassFileReader cf_reader{ class_file_src };
+        ClassFileParser cf_parser{ cf_reader, src_file };
 
-    ClassFile cf{ cf_parser.parse() };
+        ClassFile cf{ cf_parser.parse() };
 
-    // TODO: SHOULD BE REMOVED LATER: For testing only!!!
-    std::cout << cf << std::endl;
+        // TODO: SHOULD BE REMOVED LATER: For testing only!!!
+        std::cout << cf << std::endl;
+
+        cf.format_check();
+    }
+    catch (...) {}
 
     return 0;
 }

@@ -214,9 +214,6 @@ public:
      * Check whether the `constant_pool` entry at that index is a `CONSTANT_Class_info`
      * structure representing the class or interface defined by this class file.
      *
-     * IT ASSUMES THAT THE GIVEN INDEX IS A VALID INDEX INTO THE `const_pool`,
-     * SO IT DOESN'T CHECK FOR THAT!
-     *
      * If the entry at that index is of wrong type and/or format, then throws a
      * `std::runtime_error` exception, which should not be caught leading to the
      * termination of the program.
@@ -235,6 +232,16 @@ public:
      * which should not be caught leading to the termination of the program.
      */
     void check_this_class();
-    };
+
+    /*
+     * Check whether the `constant_pool` entry at that index is a `CONSTANT_Utf8_info`
+     * structure.
+     *
+     * If the entry at that index is of wrong type and/or format, then throws a
+     * `std::runtime_error` exception, which should not be caught leading to the
+     * termination of the program.
+     */
+    void check_const_pool_index_type_const_utf8(std::size_t index);
+};
 
 #endif // CLASS_FILE_CLASS_FILE_H
