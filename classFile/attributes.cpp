@@ -1,4 +1,5 @@
 #include "attributes.h"
+#include "log.h"
 
 #include <cassert>
 #include <unordered_map>
@@ -89,3 +90,8 @@ LineNumberTableEntry::LineNumberTableEntry(u2 start, u2 lineNum)
     : startPc{ start },
     lineNumber{ lineNum }
 {}
+
+void checkAttr(const AttrInfo& attr)
+{
+    logFixme("IMPLEMENT an `AttrInfo` format checker!");
+}

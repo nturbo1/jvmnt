@@ -149,6 +149,32 @@ void ClassFile::checkInterfaces()
     }
 }
 
+void ClassFile::checkFields()
+{
+    for (const FieldInfo& field : m_fields)
+    {
+        checkConstPoolIndexTypeConstUtf8(field.nameIndex);
+        checkConstPoolIndexTypeConstUtf8(field.descriptorIndex);
+        for (std::size_t i{0}; i < field.attributes.size(); ++i)
+        {
+            checkAttr( *(field.attributes[i].get()) );
+        }
+    }
+}
+
+void ClassFile::checkMethods()
+{
+    for (const MethodInfo& method : m_methods)
+    {
+        checkConstPoolIndexTypeConstUtf8(method.nameIndex);
+        checkConstPoolIndexTypeConstUtf8(method.descriptorIndex);
+        for (std::size_t i{0}; i < method.attributes.size(); ++i)
+        {
+            checkAttr( *(method.attributes[i].get()) );
+        }
+    }
+}
+
 void ClassFile::checkConstPoolIndex(std::size_t index)
 {
     if (index < 1 || m_constPool.size() < index)

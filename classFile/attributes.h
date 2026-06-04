@@ -236,4 +236,12 @@ struct SourceFileAttrInfo
     SourceFileAttrInfo(u2 attrNameIdx);
 };
 
+/*
+ * Format checks a given attribute.
+ *
+ * If the attribute is invalid, then throws a `std::runtime_error` exception,
+ * which should not be caught leading to the termination of the program.
+ */
+void checkAttr(const AttrInfo& attr);
+
 #endif // CLASS_FILE_ATTRIBUTES_H

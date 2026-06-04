@@ -248,6 +248,10 @@ public:
      */
     void checkInterfaces();
 
+    void checkFields();
+
+    void checkMethods();
+
     /*
      * Checks whether a given `index` is a valid index into the given `const_pool`.
      *
