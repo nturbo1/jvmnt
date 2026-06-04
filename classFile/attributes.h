@@ -242,6 +242,6 @@ struct SourceFileAttrInfo
  * If the attribute is invalid, then throws a `std::runtime_error` exception,
  * which should not be caught leading to the termination of the program.
  */
-void checkAttr(const AttrInfo& attr);
+void checkAttr(const AttrInfo& attr, const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool);
 
 #endif // CLASS_FILE_ATTRIBUTES_H

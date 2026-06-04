@@ -91,7 +91,110 @@ LineNumberTableEntry::LineNumberTableEntry(u2 start, u2 lineNum)
     lineNumber{ lineNum }
 {}
 
-void checkAttr(const AttrInfo& attr)
+void checkAttr(const AttrInfo& attr, const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    logFixme("IMPLEMENT an `AttrInfo` format checker!");
+    AttrType attrType{ resolveAttrType(constPool, attr.attrNameIndex) };
+    switch (attrType)
+    {
+    case AttrType::ConstantValue:
+        logFixme("IMPLEMENT ConstantValue format checker printer!!!");
+        break;
+
+    case AttrType::Code:
+    {
+        logFixme("IMPLEMENT Code attribute format checker logic!!!");
+        break;
+    }
+
+    case AttrType::StackMapTable:
+        logFixme("IMPLEMENT StackMapTable attribute format checker logic!!!");
+        break;
+
+    case AttrType::Exceptions:
+        logFixme("IMPLEMENT Exceptions attribute format checker logic!!!");
+        break;
+
+    case AttrType::BootstrapMethods:
+        logFixme("IMPLEMENT BootstrapMethods attribute format checker logic!!!");
+        break;
+
+    case AttrType::InnerClasses:
+        logFixme("IMPLEMENT InnerClasses attribute format checker logic!!!");
+        break;
+
+    case AttrType::EnclosingMethod:
+        logFixme("IMPLEMENT EnclosingMethod attribute format checker logic!!!");
+        break;
+
+    case AttrType::Synthetic:
+        logFixme("IMPLEMENT Synthetic attribute format checker logic!!!");
+        break;
+
+    case AttrType::Signature:
+        logFixme("IMPLEMENT Signature attribute format checker logic!!!");
+        break;
+
+    case AttrType::RuntimeVisibleAnnotations:
+        logFixme("IMPLEMENT RuntimeVisibleAnnotations attribute format checker logic!!!");
+        break;
+
+    case AttrType::RuntimeInvisibleAnnotations:
+        logFixme("IMPLEMENT RuntimeInvisibleAnnotations attribute format checker logic!!!");
+        break;
+
+    case AttrType::RuntimeVisibleParameterAnnotations:
+        logFixme("IMPLEMENT RuntimeVisibleParameterAnnotations attribute format checker logic!!!");
+        break;
+
+    case AttrType::RuntimeInvisibleParameterAnnotations:
+        logFixme("IMPLEMENT RuntimeInvisibleParameterAnnotations attribute format checker logic!!!");
+        break;
+
+    case AttrType::RuntimeVisibleTypeAnnotations:
+        logFixme("IMPLEMENT RuntimeVisibleTypeAnnotations attribute format checker logic!!!");
+        break;
+
+    case AttrType::RuntimeInvisibleTypeAnnotations:
+        logFixme("IMPLEMENT RuntimeInvisibleTypeAnnotations attribute format checker logic!!!");
+        break;
+
+    case AttrType::AnnotationDefault:
+        logFixme("IMPLEMENT AnnotationDefault attribute format checker logic!!!");
+        break;
+
+    case AttrType::MethodParameters:
+        logFixme("IMPLEMENT MethodParameters attribute format checker logic!!!");
+        break;
+
+    case AttrType::SourceFile:
+    {
+        logFixme("IMPLEMENT SourceFile attribute format checker logic!!!");
+        break;
+    }
+
+    case AttrType::SourceDebugExtension:
+        logFixme("IMPLEMENT SourceDebugExtension attribute format checker logic!!!");
+        break;
+
+    case AttrType::LineNumberTable:
+    {
+        logFixme("IMPLEMENT LineNumberTable attribute format checker logic!!!");
+        break;
+    }
+
+    case AttrType::LocalVariableTable:
+        logFixme("IMPLEMENT LocalVariableTable attribute format checker logic!!!");
+        break;
+
+    case AttrType::LocalVariableTypeTable:
+        logFixme("IMPLEMENT LocalVariableTypeTable attribute format checker logic!!!");
+        break;
+
+    case AttrType::Deprecated:
+        logFixme("IMPLEMENT Deprecated attribute format checker logic!!!");
+        break;
+
+    default:
+        logError("Unknown `AttrType` enum value: %d", attrType);
+    }
 }

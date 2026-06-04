@@ -40,7 +40,9 @@ void ClassFile::formatCheck()
     checkMethods();
     for (std::size_t i{0}; i < m_attributes.size(); ++i)
     {
-        checkAttr( *(m_attributes[i].get()) );
+        const AttrInfo& attr{ *(m_attributes[i].get()) };
+        checkConstPoolIndexTypeConstUtf8(attr.attrNameIndex);
+        checkAttr( attr, m_constPool );
     }
 
     // TODO: VALIDATE that:
@@ -164,7 +166,9 @@ void ClassFile::checkFields()
         checkConstPoolIndexTypeConstUtf8(field.descriptorIndex);
         for (std::size_t i{0}; i < field.attributes.size(); ++i)
         {
-            checkAttr( *(field.attributes[i].get()) );
+            const AttrInfo& attr{ *(field.attributes[i].get()) };
+            checkConstPoolIndexTypeConstUtf8(attr.attrNameIndex);
+            checkAttr( attr, m_constPool );
         }
     }
 }
@@ -177,7 +181,9 @@ void ClassFile::checkMethods()
         checkConstPoolIndexTypeConstUtf8(method.descriptorIndex);
         for (std::size_t i{0}; i < method.attributes.size(); ++i)
         {
-            checkAttr( *(method.attributes[i].get()) );
+            const AttrInfo& attr{ *(method.attributes[i].get()) };
+            checkConstPoolIndexTypeConstUtf8(attr.attrNameIndex);
+            checkAttr( attr, m_constPool );
         }
     }
 }
