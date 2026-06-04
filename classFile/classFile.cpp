@@ -2,6 +2,7 @@
 
 #include <string_view>
 #include <cassert>
+#include <cstddef>
 
 FieldInfo::FieldInfo(
         u2 accessFgs,
@@ -35,6 +36,12 @@ void ClassFile::formatCheck()
     checkThisClass();
     checkSuperClass();
     checkInterfaces();
+    checkFields();
+    checkMethods();
+    for (std::size_t i{0}; i < m_attributes.size(); ++i)
+    {
+        checkAttr( *(m_attributes[i].get()) );
+    }
 
     // TODO: VALIDATE that:
     //       - each value in the `interfaces` array must be a valid index into the
