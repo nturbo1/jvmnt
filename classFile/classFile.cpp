@@ -34,6 +34,7 @@ void ClassFile::formatCheck()
 
     checkThisClass();
     checkSuperClass();
+    checkInterfaces();
 
     // TODO: VALIDATE that:
     //       - each value in the `interfaces` array must be a valid index into the
@@ -142,6 +143,10 @@ void ClassFile::checkSuperClass()
 
 void ClassFile::checkInterfaces()
 {
+    for (u2 interfaceIdx : m_interfaces)
+    {
+        checkConstPoolIndexTypeConstClass(interfaceIdx);
+    }
 }
 
 void ClassFile::checkConstPoolIndex(std::size_t index)
