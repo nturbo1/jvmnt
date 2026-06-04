@@ -11,29 +11,29 @@ enum class LogLevel
     Fixme
 };
 
-void log_write(LogLevel lvl, const char* file, int line, const char* fmt, ...);
+void logWrite(LogLevel lvl, const char* file, int line, const char* fmt, ...);
 
-#define log_fixme(fmt, ...) \
-    log_write(LogLevel::Fixme, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define logFixme(fmt, ...) \
+    logWrite(LogLevel::Fixme, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 # ifdef DEBUG
-# define log_debug(fmt, ...) \
-    log_write(LogLevel::Debug, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+# define logDebug(fmt, ...) \
+    logWrite(LogLevel::Debug, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 # else
-# define log_debug(fmt, ...) \
+# define logDebug(fmt, ...) \
     do {} while (0);
 # endif
 
-#define log_info(fmt, ...) \
-    log_write(LogLevel::Info, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define logInfo(fmt, ...) \
+    logWrite(LogLevel::Info, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
-#define log_warn(fmt, ...) \
-    log_write(LogLevel::Warn, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define logWarn(fmt, ...) \
+    logWrite(LogLevel::Warn, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
-#define log_error(fmt, ...) \
-    log_write(LogLevel::Error, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define logError(fmt, ...) \
+    logWrite(LogLevel::Error, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
-#define log_fatal(fmt, ...) \
-    log_write(LogLevel::Fatal, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define logFatal(fmt, ...) \
+    logWrite(LogLevel::Fatal, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 #endif // BASE_LOG_H

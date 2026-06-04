@@ -2,7 +2,7 @@
 #define CLASS_FILE_ATTRIBUTES_H
 
 #include "base.h"
-#include "const_pool.h"
+#include "constPool.h"
 
 #include <vector>
 #include <memory>
@@ -45,9 +45,9 @@ enum class AttrType
     Unknown // used for unknown/nonexistent/invalid attribute types
 };
 
-AttrType resolve_attr_type(
-        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool,
-        u2 attr_name_index
+AttrType resolveAttrType(
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool,
+        u2 attrNameIndex
 );
 
 /*
@@ -71,9 +71,9 @@ struct AttrInfo
      * The `constant_pool` entry at `attribute_name_index` MUST be a
      * `CONSTANT_Utf8_info` structure representing the name of the attribute.
      */
-    u2 attr_name_index;
+    u2 attrNameIndex;
 
-    AttrInfo(u2 attr_name_idx);
+    AttrInfo(u2 attrNameIdx);
 };
 
 /*
@@ -81,31 +81,31 @@ struct AttrInfo
  * the code array. The order of the handlers in the exception_table array is
  * significant.
  *
- * The values of the two items `start_pc` and `end_pc` indicate the ranges in the
- * code array at which the exception handler is active. The value of `start_pc`
+ * The values of the two items `startPc` and `endPc` indicate the ranges in the
+ * code array at which the exception handler is active. The value of `startPc`
  * MUST be a valid index into the code array of the opcode of an instruction.
- * The value of `end_pc` either MUST be a valid index into the code array of the
+ * The value of `endPc` either MUST be a valid index into the code array of the
  * opcode of an instruction or MUST be equal to `code_length`, the length of the
- * code array. The value of `start_pc` MUST be less than the value of `end_pc`.
+ * code array. The value of `startPc` MUST be less than the value of `endPc`.
  *
- * The `start_pc` is inclusive and `end_pc` is exclusive; that is, the exception
+ * The `startPc` is inclusive and `endPc` is exclusive; that is, the exception
  * handler MUST be active while the program counter is within the interval
- * `[start_pc, end_pc)`.
+ * `[startPc, endPc)`.
  */
 struct ExceptionTableEntry
 {
-    u2 start_pc;
-    u2 end_pc;
+    u2 startPc;
+    u2 endPc;
 
     /*
-     * The value of the `handler_pc` item indicates the start of the exception
+     * The value of the `handlerPc` item indicates the start of the exception
      * handler. The value of the item MUST be a valid index into the code array
      * and MUST be the index of the opcode of an instruction.
      */
-    u2 handler_pc;
+    u2 handlerPc;
 
     /*
-     * If the value of the `catch_type` item is nonzero, it MUST be a valid index
+     * If the value of the `catchType` item is nonzero, it MUST be a valid index
      * into the `constant_pool` table. The `constant_pool` entry at that index
      * MUST be a `CONSTANT_Class_info` structure representing a class of
      * exceptions that this exception handler is designated to catch. The exception
@@ -114,12 +114,12 @@ struct ExceptionTableEntry
      *
      * The verifier checks that the class is `Throwable` or a subclass of `Throwable`.
      *
-     * If the value of the `catch_type` item is zero, this exception handler is called
+     * If the value of the `catchType` item is zero, this exception handler is called
      * for all exceptions. This is used to implement `finally`.
      */
-    u2 catch_type;
+    u2 catchType;
 
-    ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catch_t);
+    ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catchT);
 };
 
 /*
@@ -158,21 +158,21 @@ struct ExceptionTableEntry
 struct CodeAttrInfo
     : AttrInfo
 {
-    u2 max_stack;
-    u2 max_locals;
+    u2 maxStack;
+    u2 maxLocals;
     std::vector<u1> code;
-    std::vector<ExceptionTableEntry> exception_table;
+    std::vector<ExceptionTableEntry> exceptionTable;
     std::vector<std::unique_ptr<AttrInfo>> attributes;
 
-    CodeAttrInfo(u2 attr_name_idx);
+    CodeAttrInfo(u2 attrNameIdx);
 };
 
 struct LineNumberTableEntry
 {
-    u2 start_pc;
-    u2 line_number;
+    u2 startPc;
+    u2 lineNumber;
 
-    LineNumberTableEntry(u2 start, u2 line_num);
+    LineNumberTableEntry(u2 start, u2 lineNum);
 };
 
 /*
@@ -197,9 +197,9 @@ struct LineNumberTableEntry
 struct LineNumberTableAttrInfo
     : AttrInfo
 {
-    std::vector<LineNumberTableEntry> line_number_table;
+    std::vector<LineNumberTableEntry> lineNumberTable;
 
-    LineNumberTableAttrInfo(u2 attr_name_idx);
+    LineNumberTableAttrInfo(u2 attrNameIdx);
 };
 
 /*
@@ -221,19 +221,19 @@ struct SourceFileAttrInfo
     : AttrInfo
 {
     /*
-     * The value of the `sourcefile_index` item MUST be a valid index into the
+     * The value of the `sourcefileIndex` item MUST be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index MUST be a
      * `CONSTANT_Utf8_info` structure representing a string.
      *
-     * The string referenced by the `sourcefile_index` item will be interpreted as indicating the
+     * The string referenced by the `sourcefileIndex` item will be interpreted as indicating the
      * name of the source file from which this class file was compiled. It will NOT be interpreted
      * as indicating the name of a directory containing the file or an absolute path name for the file;
      * such platform-specific additional information MUST be supplied by the run-time interpreter
      * or development tool at the time the file name is actually used
      */
-    u2 sourcefile_index;
+    u2 sourcefileIndex;
 
-    SourceFileAttrInfo(u2 attr_name_idx);
+    SourceFileAttrInfo(u2 attrNameIdx);
 };
 
 #endif // CLASS_FILE_ATTRIBUTES_H

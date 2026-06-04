@@ -1,7 +1,7 @@
 #include "parser/parser.h"
 
 #include "base.h"
-#include "class_file/class_file.h"
+#include "classFile/classFile.h"
 
 #include <iostream>
 #include <fstream>
@@ -11,23 +11,23 @@ int main()
 {
     try
     {
-        std::string src_file{ "Main.class" };
-        std::ifstream class_file_src{ src_file, std::ios::binary };
+        std::string srcFile{ "Main.class" };
+        std::ifstream classFileSrc{ srcFile, std::ios::binary };
 
-        if (class_file_src.fail())
-            log_fatal("Failed to open the class file.");
+        if (classFileSrc.fail())
+            logFatal("Failed to open the class file.");
 
-        log_debug("Successfully opened the class file.");
+        logDebug("Successfully opened the class file.");
 
-        ClassFileReader cf_reader{ class_file_src };
-        ClassFileParser cf_parser{ cf_reader, src_file };
+        ClassFileReader cfReader{ classFileSrc };
+        ClassFileParser cfParser{ cfReader, srcFile };
 
-        ClassFile cf{ cf_parser.parse() };
+        ClassFile cf{ cfParser.parse() };
 
         // TODO: SHOULD BE REMOVED LATER: For testing only!!!
         std::cout << cf << std::endl;
 
-        cf.format_check();
+        cf.formatCheck();
     }
     catch (...) {}
 

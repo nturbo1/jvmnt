@@ -5,9 +5,9 @@
 #include <stdexcept>
 
 #ifdef DEBUG
-static const LogLevel log_level = LogLevel::Debug;
+static const LogLevel logLevel = LogLevel::Debug;
 #else
-static const LogLevel log_level = LogLevel::Info;
+static const LogLevel logLevel = LogLevel::Info;
 #endif
 
 static const char* lvl_name(LogLevel lvl)
@@ -31,9 +31,9 @@ static const char* lvl_name(LogLevel lvl)
     }
 }
 
-void log_write(LogLevel lvl, const char* file, int line, const char* fmt, ...)
+void logWrite(LogLevel lvl, const char* file, int line, const char* fmt, ...)
 {
-    if (lvl < log_level)
+    if (lvl < logLevel)
     {
         return;
     }

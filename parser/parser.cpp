@@ -1,6 +1,6 @@
 #include "parser.h"
 
-#include "class_file.h"
+#include "classFile.h"
 #include "base.h"
 #include "attributes.h"
 
@@ -24,40 +24,40 @@ ClassFileParser::ClassFileParser(ClassFileReader& reader, const std::string& fil
 
 ClassFile ClassFileParser::parse()
 {
-    u4 magic{ m_reader.read_u4() };
+    u4 magic{ m_reader.readU4() };
     if (magic != CLASS_FILE_MAGIC)
-        log_fatal("Incompatible magic value %d in class file %s", magic, m_filename.c_str());
+        logFatal("Incompatible magic value %d in class file %s", magic, m_filename.c_str());
 
-    u2 minor_version{ m_reader.read_u2() };
-    u2 major_version{ m_reader.read_u2() };
+    u2 minorVersion{ m_reader.readU2() };
+    u2 majorVersion{ m_reader.readU2() };
 
-    std::vector<std::unique_ptr<ConstPoolEntry>> const_pool{ parse_const_pool() };
-    u2 access_flags{ m_reader.read_u2() };
-    u2 this_class{ m_reader.read_u2() };
+    std::vector<std::unique_ptr<ConstPoolEntry>> constPool{ parseConstPool() };
+    u2 accessFlags{ m_reader.readU2() };
+    u2 thisClass{ m_reader.readU2() };
 
-    u2 super_class{ m_reader.read_u2() };
+    u2 superClass{ m_reader.readU2() };
 
-    u2 interfaces_count{ m_reader.read_u2() };
+    u2 interfacesCount{ m_reader.readU2() };
     std::vector<u2> interfaces;
-    interfaces.reserve(interfaces_count);
-    for (u2 i{0}; i < interfaces_count; ++i)
+    interfaces.reserve(interfacesCount);
+    for (u2 i{0}; i < interfacesCount; ++i)
     {
-        u2 intface{ m_reader.read_u2() };
+        u2 intface{ m_reader.readU2() };
         interfaces.push_back(intface);
     }
 
-    std::vector<FieldInfo> fields{ parse_fields(const_pool) };
-    std::vector<MethodInfo> methods{ parse_methods(const_pool) };
-    std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes(const_pool) };
+    std::vector<FieldInfo> fields{ parseFields(constPool) };
+    std::vector<MethodInfo> methods{ parseMethods(constPool) };
+    std::vector<std::unique_ptr<AttrInfo>> attributes{ parseAttributes(constPool) };
 
     return ClassFile{
             magic,
-            minor_version,
-            major_version,
-            std::move(const_pool),
-            access_flags,
-            this_class,
-            super_class,
+            minorVersion,
+            majorVersion,
+            std::move(constPool),
+            accessFlags,
+            thisClass,
+            superClass,
             interfaces,
             std::move(fields),
             std::move(methods),
@@ -117,79 +117,79 @@ ConstPoolEntryTag matchConstPoolEntryTag(u1 tag)
     }
 }
 
-std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
+std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parseConstPool()
 {
-    u2 const_pool_count{ m_reader.read_u2() };
+    u2 constPoolCount{ m_reader.readU2() };
 
-    std::vector<std::unique_ptr<ConstPoolEntry>> const_pool;
-    // cp_info constant_pool[constant_pool_count-1]
-    const_pool.reserve(const_pool_count - 1);
+    std::vector<std::unique_ptr<ConstPoolEntry>> constPool;
+    // cp_info constant_pool[constant_poolCount-1]
+    constPool.reserve(constPoolCount - 1);
 
-    // `constant_pool` indexes are in the range `1, 2, ..., constant_pool_count - 1`.
-    for (int i{1}; i < const_pool_count; ++i)
+    // `constant_pool` indexes are in the range `1, 2, ..., constant_poolCount - 1`.
+    for (int i{1}; i < constPoolCount; ++i)
     {
-        u1 t{ m_reader.read_u1() };
+        u1 t{ m_reader.readU1() };
         ConstPoolEntryTag tag{ matchConstPoolEntryTag(t) };
 
         if (tag == ConstPoolEntryTag::INVALID)
-            log_fatal("Constant pool entry at index %d has an invalid tag.", i);
+            logFatal("Constant pool entry at index %d has an invalid tag.", i);
 
         switch(tag)
         {
         case ConstPoolEntryTag::CONSTANT_Class:
-            const_pool.push_back(parse_const_class_info(tag));
+            constPool.push_back(parseConstClassInfo(tag));
             break;
 
         case ConstPoolEntryTag::CONSTANT_Fieldref:
-            const_pool.push_back(parse_const_fieldref_info(tag));
+            constPool.push_back(parseConstFieldrefInfo(tag));
             break;
 
         case ConstPoolEntryTag::CONSTANT_Methodref:
-            const_pool.push_back(parse_const_methodref_info(tag));
+            constPool.push_back(parseConstMethodrefInfo(tag));
             break;
 
         case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
-            log_fixme("Implement constant pool entry 'CONSTANT_InterfaceMethodref' parser!");
+            logFixme("Implement constant pool entry 'CONSTANT_InterfaceMethodref' parser!");
             break;
 
         case ConstPoolEntryTag::CONSTANT_String:
-            const_pool.push_back(parse_const_string_info(tag));
+            constPool.push_back(parseConstStringInfo(tag));
             break;
 
         case ConstPoolEntryTag::CONSTANT_Integer:
-            log_fixme("Implement constant pool entry 'CONSTANT_Integer' parser!");
+            logFixme("Implement constant pool entry 'CONSTANT_Integer' parser!");
             break;
 
         case ConstPoolEntryTag::CONSTANT_Float:
-            log_fixme("Implement constant pool entry 'CONSTANT_Float' parser!");
+            logFixme("Implement constant pool entry 'CONSTANT_Float' parser!");
             break;
 
         case ConstPoolEntryTag::CONSTANT_Long:
-            log_fixme("Implement constant pool entry 'CONSTANT_Long' parser!");
+            logFixme("Implement constant pool entry 'CONSTANT_Long' parser!");
             break;
 
         case ConstPoolEntryTag::CONSTANT_Double:
-            const_pool.push_back(parse_const_double_info(tag));
+            constPool.push_back(parseConstDoubleInfo(tag));
             break;
 
         case ConstPoolEntryTag::CONSTANT_NameAndType:
-            const_pool.push_back(parse_const_nameandtype_info(tag));
+            constPool.push_back(parseConstNameandtypeInfo(tag));
             break;
 
         case ConstPoolEntryTag::CONSTANT_Utf8:
-            const_pool.push_back(parse_const_utf8_info(tag));
+            constPool.push_back(parseConstUtf8Info(tag));
             break;
 
         case ConstPoolEntryTag::CONSTANT_MethodHandle:
-            log_fixme("Implement constant pool entry 'CONSTANT_MethodHandle' parser!");
+            logFixme("Implement constant pool entry 'CONSTANT_MethodHandle' parser!");
             break;
 
         case ConstPoolEntryTag::CONSTANT_MethodType:
-            log_fixme("Implement constant pool entry 'CONSTANT_MethodType' parser!");
+            logFixme("Implement constant pool entry 'CONSTANT_MethodType' parser!");
             break;
 
         case ConstPoolEntryTag::CONSTANT_InvokeDynamic:
-            const_pool.push_back(parse_const_invoke_dynamic_info(tag));
+            constPool.push_back(parseConstInvokeDynamicInfo(tag));
             break;
 
         default:
@@ -197,23 +197,23 @@ std::vector<std::unique_ptr<ConstPoolEntry>> ClassFileParser::parse_const_pool()
         }
     }
 
-    return const_pool;
+    return constPool;
 }
 
-std::unique_ptr<ConstMethodrefInfo> ClassFileParser::parse_const_methodref_info(ConstPoolEntryTag tag)
+std::unique_ptr<ConstMethodrefInfo> ClassFileParser::parseConstMethodrefInfo(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_Methodref &&
             "Non 'CONSTANT_Methodref' constant pool entry tag value was passed to the CONSTANT_Methodref_info parser");
 
-    u2 class_index{ m_reader.read_u2() };
-    // TODO: VALIDATE that the value of the `class_index` item must be a valid index into the
+    u2 classIndex{ m_reader.readU2() };
+    // TODO: VALIDATE that the value of the `classIndex` item must be a valid index into the
     //       `constant_pool` table. The `constant_pool` entry at that index must be a
     //       `CONSTANT_Class_info` structure representing a class, NOT an interface, type
     //       that has the method as a member.
 
-    u2 name_and_type_index{ m_reader.read_u2() };
+    u2 nameAndTypeIndex{ m_reader.readU2() };
     // TODO: VALIDATE that:
-    //       - the value of the `name_and_type_index` item must be a valid index into
+    //       - the value of the `nameAndTypeIndex` item must be a valid index into
     //         the `constant_pool` table. The `constant_pool` entry at that index must be a
     //         `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
     //         the name and descriptor of the method.
@@ -222,416 +222,416 @@ std::unique_ptr<ConstMethodrefInfo> ClassFileParser::parse_const_methodref_info(
     //         be the special name `<init>`, representing an instance initialization method.
     //         The return type of such a method must be `void`.
 
-    return std::make_unique<ConstMethodrefInfo>(tag, class_index, name_and_type_index);
+    return std::make_unique<ConstMethodrefInfo>(tag, classIndex, nameAndTypeIndex);
 }
 
-std::unique_ptr<ConstFieldrefInfo> ClassFileParser::parse_const_fieldref_info(ConstPoolEntryTag tag)
+std::unique_ptr<ConstFieldrefInfo> ClassFileParser::parseConstFieldrefInfo(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_Fieldref &&
             "Non 'CONSTANT_Fieldref' constant pool entry tag value was passed to the CONSTANT_Fieldref_info parser");
 
-    u2 class_index{ m_reader.read_u2() };
+    u2 classIndex{ m_reader.readU2() };
     // TODO: VALIDATE that:
-    //       - the value of the `class_index` item must be a valid index into the
+    //       - the value of the `classIndex` item must be a valid index into the
     //         `constant_pool` table. The `constant_pool` entry at that index must be a
     //         `CONSTANT_Class_info` structure representing a class or an interface type
     //         that has the field as a member.
 
-    u2 name_and_type_index{ m_reader.read_u2() };
+    u2 nameAndTypeIndex{ m_reader.readU2() };
     // TODO: VALIDATE that:
-    //       - the value of the `name_and_type_index` item must be a valid index into
+    //       - the value of the `nameAndTypeIndex` item must be a valid index into
     //         the `constant_pool` table. The `constant_pool` entry at that index must be a
     //         `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
     //         the name and descriptor of the field. The descriptor MUST be a field descriptor.
 
-    return std::make_unique<ConstFieldrefInfo>(tag, class_index, name_and_type_index);
+    return std::make_unique<ConstFieldrefInfo>(tag, classIndex, nameAndTypeIndex);
 }
 
-std::unique_ptr<ConstStringInfo> ClassFileParser::parse_const_string_info(ConstPoolEntryTag tag)
+std::unique_ptr<ConstStringInfo> ClassFileParser::parseConstStringInfo(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_String &&
             "Non 'CONSTANT_String' constant pool entry tag value was passed to the CONSTANT_String_info parser");
 
-    u2 string_index{ m_reader.read_u2() };
+    u2 stringIndex{ m_reader.readU2() };
     // TODO: VALIDATE that:
-    //       - the value of the `string_index` item must be a valid index into the
+    //       - the value of the `stringIndex` item must be a valid index into the
     //         `constant_pool` table. The `constant_pool` entry at that index must be a
     //         `CONSTANT_Utf8_info` structure representing the sequence of Unicode
     //         code points to which the String object is to be initialized.
 
-    return std::make_unique<ConstStringInfo>(tag, string_index);
+    return std::make_unique<ConstStringInfo>(tag, stringIndex);
 }
 
-std::unique_ptr<ConstDoubleInfo> ClassFileParser::parse_const_double_info(ConstPoolEntryTag tag)
+std::unique_ptr<ConstDoubleInfo> ClassFileParser::parseConstDoubleInfo(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_Double &&
             "Non 'CONSTANT_Double' constant pool entry tag value was passed to the CONSTANT_Double_info parser");
-    u4 high_bytes{ m_reader.read_u4() };
-    u4 low_bytes{ m_reader.read_u4() };
+    u4 highBytes{ m_reader.readU4() };
+    u4 lowBytes{ m_reader.readU4() };
 
-    return std::make_unique<ConstDoubleInfo>(tag, high_bytes, low_bytes);
+    return std::make_unique<ConstDoubleInfo>(tag, highBytes, lowBytes);
 }
 
 std::unique_ptr<ConstInvokeDynamicInfo>
-ClassFileParser::parse_const_invoke_dynamic_info(ConstPoolEntryTag tag)
+ClassFileParser::parseConstInvokeDynamicInfo(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_InvokeDynamic &&
             "Non 'CONSTANT_InvokeDynamic' constant pool entry tag value was passed to the"
             "CONSTANT_InvokeDynamic_info parser");
 
-    u2 bootstrap_method_attr_index{ m_reader.read_u2() };
-    // TODO: VALIDATE that the `bootstrap_method_attr_index` item must be a valid index into the
+    u2 bootstrapMethodAttrIndex{ m_reader.readU2() };
+    // TODO: VALIDATE that the `bootstrapMethodAttrIndex` item must be a valid index into the
     //       `bootstrap_methods` array of the bootstrap method table of this class file!
 
-    u2 name_and_type_index{ m_reader.read_u2() };
-    // TODO: VALIDATE that the value of the `name_and_type_index` item must be a valid index into the
+    u2 nameAndTypeIndex{ m_reader.readU2() };
+    // TODO: VALIDATE that the value of the `nameAndTypeIndex` item must be a valid index into the
     //       `constant_pool` table. The `constant_pool` entry at that index must be a
     //       `CONSTANT_NameAndType_info` structure representing a method name and method descriptor.
 
-    return std::make_unique<ConstInvokeDynamicInfo>(tag, bootstrap_method_attr_index, name_and_type_index);
+    return std::make_unique<ConstInvokeDynamicInfo>(tag, bootstrapMethodAttrIndex, nameAndTypeIndex);
 }
 
-std::unique_ptr<ConstClassInfo> ClassFileParser::parse_const_class_info(ConstPoolEntryTag tag)
+std::unique_ptr<ConstClassInfo> ClassFileParser::parseConstClassInfo(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_Class &&
             "Non 'CONSTANT_Class' constant pool entry tag value was passed to the 'CONSTANT_Class_info' parser");
 
-    u2 name_index{ m_reader.read_u2() };
-    // TODO: VALIDATE the value of the `name_index` item must be a valid index into
+    u2 nameIndex{ m_reader.readU2() };
+    // TODO: VALIDATE the value of the `nameIndex` item must be a valid index into
     //       the `constant_pool` table. The `constant_pool` entry at that index must be a
     //       `CONSTANT_Utf8_info` structure representing a valid binary class or interface
     //       name encoded in internal form.
 
-    return std::make_unique<ConstClassInfo>(tag, name_index);
+    return std::make_unique<ConstClassInfo>(tag, nameIndex);
 }
 
-std::unique_ptr<ConstUtf8Info> ClassFileParser::parse_const_utf8_info(ConstPoolEntryTag tag)
+std::unique_ptr<ConstUtf8Info> ClassFileParser::parseConstUtf8Info(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_Utf8 &&
             "Non 'CONSTANT_Utf8' constant pool entry tag value was passed to the 'CONSTANT_Utf8_info' parser");
 
-    u2 length{ m_reader.read_u2() };
-    std::vector<u1> utf8_bytes;
-    utf8_bytes.reserve(length);
+    u2 length{ m_reader.readU2() };
+    std::vector<u1> utf8Bytes;
+    utf8Bytes.reserve(length);
     for (std::size_t i{0}; i < length; ++i)
     {
-        u1 b{ m_reader.read_u1() };
+        u1 b{ m_reader.readU1() };
 
         if (b == 0)
-            log_fatal("`Constant UTF8` bytes cannot be `0`!");
+            logFatal("`Constant UTF8` bytes cannot be `0`!");
         if (0xf0 <= b && b <= 0xff)
-            log_fatal("`Constant UTF8` bytes cannot lie in the range (byte)`0xf0` to (byte)`0xff`!");
+            logFatal("`Constant UTF8` bytes cannot lie in the range (byte)`0xf0` to (byte)`0xff`!");
 
-        utf8_bytes.push_back(b);
+        utf8Bytes.push_back(b);
     }
 
-    return std::make_unique<ConstUtf8Info>(tag, utf8_bytes);
+    return std::make_unique<ConstUtf8Info>(tag, utf8Bytes);
 }
 
 std::unique_ptr<ConstNameAndTypeInfo>
-ClassFileParser::parse_const_nameandtype_info(ConstPoolEntryTag tag)
+ClassFileParser::parseConstNameandtypeInfo(ConstPoolEntryTag tag)
 {
     assert(tag == ConstPoolEntryTag::CONSTANT_NameAndType &&
             "Non 'CONSTANT_NameAndType' constant pool entry tag value was passed"
             "to the 'CONSTANT_NameAndType_info' parser");
 
-    u2 name_index{ m_reader.read_u2() };
+    u2 nameIndex{ m_reader.readU2() };
     // TODO: VALIDATE that:
-    //       - the value of the `name_index` item must be a valid index into the
+    //       - the value of the `nameIndex` item must be a valid index into the
     //         `constant_pool` table. The `constant_pool` entry at that index must be a
     //         `CONSTANT_Utf8_info` structure representing either the special method
     //         name `<init>` or a valid unqualified name denoting a field or method.
 
-    u2 descriptor_index{ m_reader.read_u2() };
+    u2 descriptorIndex{ m_reader.readU2() };
     // TODO: VALIDATE that:
-    //       - the value of the `descriptor_index` item must be a valid index into the
+    //       - the value of the `descriptorIndex` item must be a valid index into the
     //         `constant_pool` table. The `constant_pool` entry at that index must be a
     //         `CONSTANT_Utf8_info` structure representing a valid field descriptor
     //         or method descriptor.
 
-    return std::make_unique<ConstNameAndTypeInfo>(tag, name_index, descriptor_index);
+    return std::make_unique<ConstNameAndTypeInfo>(tag, nameIndex, descriptorIndex);
 }
 
 std::unique_ptr<AttrInfo>
-ClassFileParser::parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+ClassFileParser::parseAttr(const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    u2 attr_name_index{ m_reader.read_u2() };
-    AttrType attr_type{ resolve_attr_type(const_pool, attr_name_index) };
+    u2 attrNameIndex{ m_reader.readU2() };
+    AttrType attrType{ resolveAttrType(constPool, attrNameIndex) };
 
-    switch (attr_type)
+    switch (attrType)
     {
     case AttrType::ConstantValue:
-        log_fatal("IMPLEMENT ConstantValue parser!!!");
+        logFatal("IMPLEMENT ConstantValue parser!!!");
         break;
 
     case AttrType::Code:
     {
-        std::unique_ptr<CodeAttrInfo> code_attr{ std::make_unique<CodeAttrInfo>(attr_name_index) };
-        parse_attr_code(*code_attr, const_pool);
-        return code_attr;
+        std::unique_ptr<CodeAttrInfo> codeAttr{ std::make_unique<CodeAttrInfo>(attrNameIndex) };
+        parseAttrCode(*codeAttr, constPool);
+        return codeAttr;
     }
 
     case AttrType::StackMapTable:
-        log_fatal("IMPLEMENT StackMapTable parser!!!");
+        logFatal("IMPLEMENT StackMapTable parser!!!");
         break;
 
     case AttrType::Exceptions:
-        log_fatal("IMPLEMENT Exceptions parser!!!");
+        logFatal("IMPLEMENT Exceptions parser!!!");
         break;
 
     case AttrType::BootstrapMethods:
-        log_fatal("IMPLEMENT BootstrapMethods parser!!!");
+        logFatal("IMPLEMENT BootstrapMethods parser!!!");
         break;
 
     case AttrType::InnerClasses:
-        log_fatal("IMPLEMENT InnerClasses parser!!!");
+        logFatal("IMPLEMENT InnerClasses parser!!!");
         break;
 
     case AttrType::EnclosingMethod:
-        log_fatal("IMPLEMENT EnclosingMethod parser!!!");
+        logFatal("IMPLEMENT EnclosingMethod parser!!!");
         break;
 
     case AttrType::Synthetic:
-        log_fatal("IMPLEMENT Synthetic parser!!!");
+        logFatal("IMPLEMENT Synthetic parser!!!");
         break;
 
     case AttrType::Signature:
-        log_fatal("IMPLEMENT Signature parser!!!");
+        logFatal("IMPLEMENT Signature parser!!!");
         break;
 
     case AttrType::RuntimeVisibleAnnotations:
-        log_fatal("IMPLEMENT RuntimeVisibleAnnotations parser!!!");
+        logFatal("IMPLEMENT RuntimeVisibleAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeInvisibleAnnotations:
-        log_fatal("IMPLEMENT RuntimeInvisibleAnnotations parser!!!");
+        logFatal("IMPLEMENT RuntimeInvisibleAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeVisibleParameterAnnotations:
-        log_fatal("IMPLEMENT RuntimeVisibleParameterAnnotations parser!!!");
+        logFatal("IMPLEMENT RuntimeVisibleParameterAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeInvisibleParameterAnnotations:
-        log_fatal("IMPLEMENT RuntimeInvisibleParameterAnnotations parser!!!");
+        logFatal("IMPLEMENT RuntimeInvisibleParameterAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeVisibleTypeAnnotations:
-        log_fatal("IMPLEMENT RuntimeVisibleTypeAnnotations parser!!!");
+        logFatal("IMPLEMENT RuntimeVisibleTypeAnnotations parser!!!");
         break;
 
     case AttrType::RuntimeInvisibleTypeAnnotations:
-        log_fatal("IMPLEMENT RuntimeInvisibleTypeAnnotations parser!!!");
+        logFatal("IMPLEMENT RuntimeInvisibleTypeAnnotations parser!!!");
         break;
 
     case AttrType::AnnotationDefault:
-        log_fatal("IMPLEMENT AnnotationDefault parser!!!");
+        logFatal("IMPLEMENT AnnotationDefault parser!!!");
         break;
 
     case AttrType::MethodParameters:
-        log_fatal("IMPLEMENT MethodParameters parser!!!");
+        logFatal("IMPLEMENT MethodParameters parser!!!");
         break;
 
     case AttrType::SourceFile:
     {
-        std::unique_ptr<SourceFileAttrInfo> sourcefile_attr{
-            std::make_unique<SourceFileAttrInfo>(attr_name_index)
+        std::unique_ptr<SourceFileAttrInfo> sourcefileAttr{
+            std::make_unique<SourceFileAttrInfo>(attrNameIndex)
         };
-        parse_attr_sourcefile(*sourcefile_attr, const_pool);
-        return sourcefile_attr;
+        parseAttrSourcefile(*sourcefileAttr, constPool);
+        return sourcefileAttr;
     }
 
     case AttrType::SourceDebugExtension:
-        log_fatal("IMPLEMENT SourceDebugExtension parser!!!");
+        logFatal("IMPLEMENT SourceDebugExtension parser!!!");
         break;
 
     case AttrType::LineNumberTable:
     {
-        std::unique_ptr<LineNumberTableAttrInfo> line_number_table_attr{
-            std::make_unique<LineNumberTableAttrInfo>(attr_name_index)
+        std::unique_ptr<LineNumberTableAttrInfo> lineNumberTableAttr{
+            std::make_unique<LineNumberTableAttrInfo>(attrNameIndex)
         };
-        parse_attr_line_number_table(*line_number_table_attr, const_pool);
-        return line_number_table_attr;
+        parseAttrLineNumberTable(*lineNumberTableAttr, constPool);
+        return lineNumberTableAttr;
     }
 
     case AttrType::LocalVariableTable:
-        log_fatal("IMPLEMENT LocalVariableTable parser!!!");
+        logFatal("IMPLEMENT LocalVariableTable parser!!!");
         break;
 
     case AttrType::LocalVariableTypeTable:
-        log_fatal("IMPLEMENT LocalVariableTypeTable parser!!!");
+        logFatal("IMPLEMENT LocalVariableTypeTable parser!!!");
         break;
 
     case AttrType::Deprecated:
-        log_fatal("IMPLEMENT Deprecated parser!!!");
+        logFatal("IMPLEMENT Deprecated parser!!!");
         break;
 
     default:
-        log_fatal("Unknown `AttrType` enum value: %d", attr_type);
+        logFatal("Unknown `AttrType` enum value: %d", attrType);
     }
 }
 
 std::vector<std::unique_ptr<AttrInfo>>
-ClassFileParser::parse_attributes(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+ClassFileParser::parseAttributes(const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    u2 attributes_count{ m_reader.read_u2() };
+    u2 attributesCount{ m_reader.readU2() };
     std::vector<std::unique_ptr<AttrInfo>> attributes;
-    attributes.reserve(attributes_count);
+    attributes.reserve(attributesCount);
 
-    for (u2 i{0}; i < attributes_count; ++i)
+    for (u2 i{0}; i < attributesCount; ++i)
     {
-        attributes.push_back(parse_attr(const_pool));
+        attributes.push_back(parseAttr(constPool));
     }
 
     return attributes;
 }
 
-std::vector<FieldInfo> ClassFileParser::parse_fields(
-        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+std::vector<FieldInfo> ClassFileParser::parseFields(
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    u2 fields_count{ m_reader.read_u2() };
+    u2 fieldsCount{ m_reader.readU2() };
     std::vector<FieldInfo> fields;
-    fields.reserve(fields_count);
+    fields.reserve(fieldsCount);
 
-    for (u2 i{0}; i < fields_count; ++i)
+    for (u2 i{0}; i < fieldsCount; ++i)
     {
-        u2 access_flags{ m_reader.read_u2() };
-        u2 name_index{ m_reader.read_u2() };
+        u2 accessFlags{ m_reader.readU2() };
+        u2 nameIndex{ m_reader.readU2() };
         // TODO: VALIDATE that:
-        //       - the value of the `name_index` item must be a valid index into the
+        //       - the value of the `nameIndex` item must be a valid index into the
         //        `constant_pool` table.
         //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
         //        structure which represents a valid unqualified name denoting a field.
 
-        u2 descriptor_index{ m_reader.read_u2() };
+        u2 descriptorIndex{ m_reader.readU2() };
         // TODO: VALIDATE that:
-        //       - the value of the `descriptor_index` item must be a valid index into the
+        //       - the value of the `descriptorIndex` item must be a valid index into the
         //         `constant_pool` table.
         //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
         //         structure which represents a valid field descriptor.
 
-        std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes(const_pool) };
-        fields.emplace_back(access_flags, name_index, descriptor_index, std::move(attributes));
+        std::vector<std::unique_ptr<AttrInfo>> attributes{ parseAttributes(constPool) };
+        fields.emplace_back(accessFlags, nameIndex, descriptorIndex, std::move(attributes));
     }
 
     return fields;
 }
 
 std::vector<MethodInfo>
-ClassFileParser::parse_methods(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+ClassFileParser::parseMethods(const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    u2 methods_count{ m_reader.read_u2() };
+    u2 methodsCount{ m_reader.readU2() };
     std::vector<MethodInfo> methods;
-    methods.reserve(methods_count);
+    methods.reserve(methodsCount);
 
-    for (u2 i = 0; i < methods_count; ++i)
+    for (u2 i = 0; i < methodsCount; ++i)
     {
-        u2 access_flags{ m_reader.read_u2() };
-        u2 name_index{ m_reader.read_u2() };
+        u2 accessFlags{ m_reader.readU2() };
+        u2 nameIndex{ m_reader.readU2() };
         // TODO: VALIDATE that:
-        //       - the value of the `name_index` item must be a valid index into the
+        //       - the value of the `nameIndex` item must be a valid index into the
         //         `constant_pool` table.
         //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
         //         structure representing either one of the special method names `<init>`
         //         or `<clinit>`, or a valid unqualified name denoting a method.
 
-        u2 descriptor_index{ m_reader.read_u2() };
+        u2 descriptorIndex{ m_reader.readU2() };
         // TODO: VALIDATE that:
-        //       - the value of the `descriptor_index` item must be a valid index into the
+        //       - the value of the `descriptorIndex` item must be a valid index into the
         //         `constant_pool` table.
         //       - the `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
         //         structure representing a valid method descriptor.
 
-        std::vector<std::unique_ptr<AttrInfo>> attributes{ parse_attributes(const_pool) };
-        methods.emplace_back(access_flags, name_index, descriptor_index, std::move(attributes));
+        std::vector<std::unique_ptr<AttrInfo>> attributes{ parseAttributes(constPool) };
+        methods.emplace_back(accessFlags, nameIndex, descriptorIndex, std::move(attributes));
     }
 
     return methods;
 }
 
-// It's assumed that the `attribute_name_index` field bytes have been read and processed
+// It's assumed that the `attributeNameIndex` field bytes have been read and processed
 // to determine the specific type of the attribute, so those bytes are skipped.
-void ClassFileParser::parse_attr_code(
-        CodeAttrInfo& code_attr,
-        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+void ClassFileParser::parseAttrCode(
+        CodeAttrInfo& codeAttr,
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    m_reader.read_u4(); // deliberately skipping `attribute_length`
+    m_reader.readU4(); // deliberately skipping `attributeLength`
 
-    u2 max_stack{ m_reader.read_u2() };
-    u2 max_locals{ m_reader.read_u2() };
+    u2 maxStack{ m_reader.readU2() };
+    u2 maxLocals{ m_reader.readU2() };
 
-    u4 code_length{ m_reader.read_u4() };
+    u4 codeLength{ m_reader.readU4() };
     std::vector<u1> code;
-    code.reserve(code_length);
-    for (u4 i = 0; i < code_length; i++)
+    code.reserve(codeLength);
+    for (u4 i = 0; i < codeLength; i++)
     {
-        code.push_back(m_reader.read_u1());
+        code.push_back(m_reader.readU1());
     }
 
-    code_attr.max_stack = max_stack;
-    code_attr.max_locals = max_locals;
-    code_attr.code = code;
-    code_attr.exception_table = parse_exception_table();
-    code_attr.attributes = parse_attributes(const_pool);
+    codeAttr.maxStack = maxStack;
+    codeAttr.maxLocals = maxLocals;
+    codeAttr.code = code;
+    codeAttr.exceptionTable = parseExceptionTable();
+    codeAttr.attributes = parseAttributes(constPool);
 }
 
-std::vector<ExceptionTableEntry> ClassFileParser::parse_exception_table()
+std::vector<ExceptionTableEntry> ClassFileParser::parseExceptionTable()
 {
-    u2 exception_table_length{ m_reader.read_u2() };
-    std::vector<ExceptionTableEntry> exception_table;
-    exception_table.reserve(exception_table_length);
-    for (u2 i = 0; i < exception_table_length; i++)
+    u2 exceptionTableLength{ m_reader.readU2() };
+    std::vector<ExceptionTableEntry> exceptionTable;
+    exceptionTable.reserve(exceptionTableLength);
+    for (u2 i = 0; i < exceptionTableLength; i++)
     {
-        u2 start_pc{ m_reader.read_u2() };
-        u2 end_pc{ m_reader.read_u2() };
-        u2 handler_pc{ m_reader.read_u2() };
-        u2 catch_type{ m_reader.read_u2() };
+        u2 startPc{ m_reader.readU2() };
+        u2 endPc{ m_reader.readU2() };
+        u2 handlerPc{ m_reader.readU2() };
+        u2 catchType{ m_reader.readU2() };
 
-        exception_table.emplace_back(start_pc, end_pc, handler_pc, catch_type);
+        exceptionTable.emplace_back(startPc, endPc, handlerPc, catchType);
     }
 
-    return exception_table;
+    return exceptionTable;
 }
 
-// It's assumed that the `attribute_name_index` field bytes have been read and processed
+// It's assumed that the `attributeNameIndex` field bytes have been read and processed
 // to determine the specific type of the attribute, so those bytes are skipped.
-void ClassFileParser::parse_attr_line_number_table(
-            LineNumberTableAttrInfo& line_number_table_attr,
-            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+void ClassFileParser::parseAttrLineNumberTable(
+            LineNumberTableAttrInfo& lineNumberTableAttr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    m_reader.read_u4(); // deliberately skipping `attribute_length`
-    line_number_table_attr.line_number_table = parse_line_number_table();
+    m_reader.readU4(); // deliberately skipping `attributeLength`
+    lineNumberTableAttr.lineNumberTable = parseLineNumberTable();
 }
 
-std::vector<LineNumberTableEntry> ClassFileParser::parse_line_number_table()
+std::vector<LineNumberTableEntry> ClassFileParser::parseLineNumberTable()
 {
-    u2 line_number_table_length{ m_reader.read_u2() };
-    std::vector<LineNumberTableEntry> line_num_table;
-    line_num_table.reserve(line_number_table_length);
+    u2 lineNumberTableLength{ m_reader.readU2() };
+    std::vector<LineNumberTableEntry> lineNumTable;
+    lineNumTable.reserve(lineNumberTableLength);
 
-    for (u2 i{0}; i < line_number_table_length; i++)
+    for (u2 i{0}; i < lineNumberTableLength; i++)
     {
-        u2 start_pc{ m_reader.read_u2() };
-        u2 line_number{ m_reader.read_u2() };
+        u2 startPc{ m_reader.readU2() };
+        u2 lineNumber{ m_reader.readU2() };
 
-        line_num_table.emplace_back(start_pc, line_number);
+        lineNumTable.emplace_back(startPc, lineNumber);
     }
 
-    return line_num_table;
+    return lineNumTable;
 }
 
-// It's assumed that the `attribute_name_index` field bytes have been read and processed
+// It's assumed that the `attributeNameIndex` field bytes have been read and processed
 // to determine the specific type of the attribute, so those bytes are skipped.
-void ClassFileParser::parse_attr_sourcefile(
-            SourceFileAttrInfo& sourcefile_attr,
-            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool)
+void ClassFileParser::parseAttrSourcefile(
+            SourceFileAttrInfo& sourcefileAttr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    m_reader.read_u4(); // deliberately skipping `attribute_length`
-    u2 sourcefile_index{ m_reader.read_u2() };
+    m_reader.readU4(); // deliberately skipping `attributeLength`
+    u2 sourcefileIndex{ m_reader.readU2() };
     // TODO: VALIDATE that:
-    //       - the value of the `sourcefile_index` item MUST be a valid index into the
+    //       - the value of the `sourcefileIndex` item MUST be a valid index into the
     //         `constant_pool` table.
     //       - the `constant_pool` entry at that index MUST be a `CONSTANT_Utf8_info`
     //         structure representing a string.
 
-    sourcefile_attr.sourcefile_index = sourcefile_index;
+    sourcefileAttr.sourcefileIndex = sourcefileIndex;
 }

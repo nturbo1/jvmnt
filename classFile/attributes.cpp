@@ -4,44 +4,44 @@
 #include <unordered_map>
 #include <string_view>
 
-AttrInfo::AttrInfo(u2 attr_name_idx)
-    : attr_name_index{ attr_name_idx }
+AttrInfo::AttrInfo(u2 attrNameIdx)
+    : attrNameIndex{ attrNameIdx }
 {}
 
-CodeAttrInfo::CodeAttrInfo(u2 attr_name_idx)
-    : AttrInfo(attr_name_idx)
+CodeAttrInfo::CodeAttrInfo(u2 attrNameIdx)
+    : AttrInfo(attrNameIdx)
 {}
 
-LineNumberTableAttrInfo::LineNumberTableAttrInfo(u2 attr_name_idx)
-    : AttrInfo(attr_name_idx)
+LineNumberTableAttrInfo::LineNumberTableAttrInfo(u2 attrNameIdx)
+    : AttrInfo(attrNameIdx)
 {}
 
-SourceFileAttrInfo::SourceFileAttrInfo(u2 attr_name_idx)
-    : AttrInfo(attr_name_idx)
+SourceFileAttrInfo::SourceFileAttrInfo(u2 attrNameIdx)
+    : AttrInfo(attrNameIdx)
 {}
 
-AttrType resolve_attr_type(
-        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool,
-        u2 attr_name_index)
+AttrType resolveAttrType(
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool,
+        u2 attrNameIndex)
 {
     // The class file format uses `1-based` indexes.
-    // However, the parsed `const_pool` vector stores the parsed constant pool items
+    // However, the parsed `constPool` vector stores the parsed constant pool items
     // in usual `0-based` indexes internally, so
-    //     class file `index` == parsed `const_pool` vector `index - 1`.
-    ConstPoolEntryTag entry_tag{ (const_pool[attr_name_index - 1])->tag };
+    //     class file `index` == parsed `constPool` vector `index - 1`.
+    ConstPoolEntryTag entryTag{ (constPool[attrNameIndex - 1])->tag };
 
-    if (entry_tag != ConstPoolEntryTag::CONSTANT_Utf8)
-        log_fatal("The `constant_pool` entry at `attribute_name_index` MUST be a "
+    if (entryTag != ConstPoolEntryTag::CONSTANT_Utf8)
+        logFatal("The `constant_pool` entry at `attribute_name_index` MUST be a "
                 "`CONSTANT_Utf8_info` structure representing the name of the attribute.");
 
-    ConstUtf8Info* const_utf8{ dynamic_cast<ConstUtf8Info*>(const_pool[attr_name_index - 1].get()) };
+    ConstUtf8Info* const_utf8{ dynamic_cast<ConstUtf8Info*>(constPool[attrNameIndex - 1].get()) };
     assert(const_utf8 &&
             "The constant pool entry was not validated to be of type `CONSTANT_Utf8_info` or "
             "the constant pool entry tag does not match the entry info bytes, which means "
             "the constant pool entry was NOT parsed correctly or the constant pool entry was "
             "of invalid format and it was not caught on time!"); 
 
-    static const std::unordered_map<std::string_view, AttrType> attr_type_table = {
+    static const std::unordered_map<std::string_view, AttrType> attrTypeTable = {
         { "ConstantValue", AttrType::ConstantValue },
         { "Code", AttrType::Code },
         { "StackMapTable", AttrType::StackMapTable },
@@ -67,25 +67,25 @@ AttrType resolve_attr_type(
         { "Deprecated", AttrType::Deprecated }
     };
 
-    std::string_view attr_name(
+    std::string_view attrName(
         reinterpret_cast<const char*>(const_utf8->bytes.data()),
         const_utf8->bytes.size()
     );
-    auto it = attr_type_table.find(attr_name);
+    auto it = attrTypeTable.find(attrName);
 
-    return (it != attr_type_table.end()) 
+    return (it != attrTypeTable.end()) 
         ? it->second
         : AttrType::Unknown;
 }
 
-ExceptionTableEntry::ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catch_t)
-    : start_pc{ start },
-    end_pc{ end },
-    handler_pc{ handler },
-    catch_type{ catch_t }
+ExceptionTableEntry::ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catchT)
+    : startPc{ start },
+    endPc{ end },
+    handlerPc{ handler },
+    catchType{ catchT }
 {}
 
-LineNumberTableEntry::LineNumberTableEntry(u2 start, u2 line_num)
-    : start_pc{ start },
-    line_number{ line_num }
+LineNumberTableEntry::LineNumberTableEntry(u2 start, u2 lineNum)
+    : startPc{ start },
+    lineNumber{ lineNum }
 {}

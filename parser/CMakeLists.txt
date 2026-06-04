@@ -1,17 +1,17 @@
-add_library(class_parser
+add_library(classParser
     parser.cpp
-    class_reader.cpp
+    classReader.cpp
     print.cpp
 )
 
-target_include_directories(class_parser
+target_include_directories(classParser
     PUBLIC
         ${CMAKE_SOURCE_DIR}/base
-        ${CMAKE_SOURCE_DIR}/class_file
+        ${CMAKE_SOURCE_DIR}/classFile
 )
 
-target_link_libraries(class_parser
+target_link_libraries(classParser
     PUBLIC
         base
-        class_file
+        classFile
 )
