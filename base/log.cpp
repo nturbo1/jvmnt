@@ -31,7 +31,7 @@ static const char* lvl_name(LogLevel lvl)
     }
 }
 
-void logWrite(LogLevel lvl, const char* file, int line, const char* fmt, ...)
+void log_write(LogLevel lvl, const char* file, int line, const char* fmt, ...)
 {
     if (lvl < logLevel)
     {

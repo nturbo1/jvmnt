@@ -45,9 +45,9 @@ enum class AttrType
     Unknown // used for unknown/nonexistent/invalid attribute types
 };
 
-AttrType resolveAttrType(
-        const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool,
-        u2 attrNameIndex
+AttrType resolve_attr_type(
+        const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool,
+        u2 attr_name_index
 );
 
 /*
@@ -71,9 +71,9 @@ struct AttrInfo
      * The `constant_pool` entry at `attribute_name_index` MUST be a
      * `CONSTANT_Utf8_info` structure representing the name of the attribute.
      */
-    u2 attrNameIndex;
+    u2 attr_name_index;
 
-    AttrInfo(u2 attrNameIdx);
+    AttrInfo(u2 attr_name_idx);
 };
 
 /*
@@ -81,31 +81,31 @@ struct AttrInfo
  * the code array. The order of the handlers in the exception_table array is
  * significant.
  *
- * The values of the two items `startPc` and `endPc` indicate the ranges in the
- * code array at which the exception handler is active. The value of `startPc`
+ * The values of the two items `start_pc` and `end_pc` indicate the ranges in the
+ * code array at which the exception handler is active. The value of `start_pc`
  * MUST be a valid index into the code array of the opcode of an instruction.
- * The value of `endPc` either MUST be a valid index into the code array of the
+ * The value of `end_pc` either MUST be a valid index into the code array of the
  * opcode of an instruction or MUST be equal to `code_length`, the length of the
- * code array. The value of `startPc` MUST be less than the value of `endPc`.
+ * code array. The value of `start_pc` MUST be less than the value of `end_pc`.
  *
- * The `startPc` is inclusive and `endPc` is exclusive; that is, the exception
+ * The `start_pc` is inclusive and `end_pc` is exclusive; that is, the exception
  * handler MUST be active while the program counter is within the interval
- * `[startPc, endPc)`.
+ * `[start_pc, end_pc)`.
  */
 struct ExceptionTableEntry
 {
-    u2 startPc;
-    u2 endPc;
+    u2 start_pc;
+    u2 end_pc;
 
     /*
-     * The value of the `handlerPc` item indicates the start of the exception
+     * The value of the `handler_pc` item indicates the start of the exception
      * handler. The value of the item MUST be a valid index into the code array
      * and MUST be the index of the opcode of an instruction.
      */
-    u2 handlerPc;
+    u2 handler_pc;
 
     /*
-     * If the value of the `catchType` item is nonzero, it MUST be a valid index
+     * If the value of the `catch_type` item is nonzero, it MUST be a valid index
      * into the `constant_pool` table. The `constant_pool` entry at that index
      * MUST be a `CONSTANT_Class_info` structure representing a class of
      * exceptions that this exception handler is designated to catch. The exception
@@ -114,12 +114,12 @@ struct ExceptionTableEntry
      *
      * The verifier checks that the class is `Throwable` or a subclass of `Throwable`.
      *
-     * If the value of the `catchType` item is zero, this exception handler is called
+     * If the value of the `catch_type` item is zero, this exception handler is called
      * for all exceptions. This is used to implement `finally`.
      */
-    u2 catchType;
+    u2 catch_type;
 
-    ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catchT);
+    ExceptionTableEntry(u2 start, u2 end, u2 handler, u2 catch_t);
 };
 
 /*
@@ -158,21 +158,42 @@ struct ExceptionTableEntry
 struct CodeAttrInfo
     : AttrInfo
 {
-    u2 maxStack;
-    u2 maxLocals;
+    /*
+     * The value of the `max_stack` item gives the maximum depth of the operand
+     * stack of this method at any point during execution of the method.
+     */
+    u2 max_stack;
+
+    /*
+     * The value of the `max_locals` item gives the number of local variables in
+     * the local variable array allocated upon invocation of this method,
+     * including the local variables used to pass parameters to the method on its
+     * invocation.
+     *
+     * The greatest local variable index for a value of type long or double is
+     * `max_locals - 2`. The greatest local variable index for a value of any other
+     * type is `max_locals - 1`.
+     */
+    u2 max_locals;
+
+    /*
+     * The length of `code` array must be greater than zero (as the code array must
+     * not be empty) and less than 65536.
+     */
     std::vector<u1> code;
-    std::vector<ExceptionTableEntry> exceptionTable;
+
+    std::vector<ExceptionTableEntry> exception_table;
     std::vector<std::unique_ptr<AttrInfo>> attributes;
 
-    CodeAttrInfo(u2 attrNameIdx);
+    CodeAttrInfo(u2 attr_name_idx);
 };
 
 struct LineNumberTableEntry
 {
-    u2 startPc;
-    u2 lineNumber;
+    u2 start_pc;
+    u2 line_number;
 
-    LineNumberTableEntry(u2 start, u2 lineNum);
+    LineNumberTableEntry(u2 start, u2 line_num);
 };
 
 /*
@@ -197,9 +218,9 @@ struct LineNumberTableEntry
 struct LineNumberTableAttrInfo
     : AttrInfo
 {
-    std::vector<LineNumberTableEntry> lineNumberTable;
+    std::vector<LineNumberTableEntry> line_number_table;
 
-    LineNumberTableAttrInfo(u2 attrNameIdx);
+    LineNumberTableAttrInfo(u2 attr_name_idx);
 };
 
 /*
@@ -221,19 +242,19 @@ struct SourceFileAttrInfo
     : AttrInfo
 {
     /*
-     * The value of the `sourcefileIndex` item MUST be a valid index into the
+     * The value of the `sourcefile_index` item MUST be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index MUST be a
      * `CONSTANT_Utf8_info` structure representing a string.
      *
-     * The string referenced by the `sourcefileIndex` item will be interpreted as indicating the
+     * The string referenced by the `sourcefile_index` item will be interpreted as indicating the
      * name of the source file from which this class file was compiled. It will NOT be interpreted
      * as indicating the name of a directory containing the file or an absolute path name for the file;
      * such platform-specific additional information MUST be supplied by the run-time interpreter
      * or development tool at the time the file name is actually used
      */
-    u2 sourcefileIndex;
+    u2 sourcefile_index;
 
-    SourceFileAttrInfo(u2 attrNameIdx);
+    SourceFileAttrInfo(u2 attr_name_idx);
 };
 
 /*
@@ -242,6 +263,6 @@ struct SourceFileAttrInfo
  * If the attribute is invalid, then throws a `std::runtime_error` exception,
  * which should not be caught leading to the termination of the program.
  */
-void checkAttr(const AttrInfo& attr, const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool);
+void check_attr(const AttrInfo& attr, const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
 
 #endif // CLASS_FILE_ATTRIBUTES_H

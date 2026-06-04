@@ -17,21 +17,21 @@ static void printConstPoolEntry(std::ostream& os, const ConstPoolEntry& e, const
     {
         const ConstClassInfo& cci = static_cast<const ConstClassInfo&>(e);
         os << std::dec
-           << indent << "\tnameIndex: " << cci.nameIndex << ",\n";
+           << indent << "\tnameIndex: " << cci.name_index << ",\n";
         break;
     }
     case ConstPoolEntryTag::CONSTANT_Fieldref:
     {
         const ConstFieldrefInfo& cfri = static_cast<const ConstFieldrefInfo&>(e);
-        os << indent << "\tclassIndex: " << cfri.classIndex << ",\n"
-           << indent << "\tnameAndTypeIndex: " << cfri.nameAndTypeIndex << "\n";
+        os << indent << "\tclassIndex: " << cfri.class_index << ",\n"
+           << indent << "\tnameAndTypeIndex: " << cfri.name_and_type_index << "\n";
         break;
     }
     case ConstPoolEntryTag::CONSTANT_Methodref:
     {
         const ConstMethodrefInfo& cmri = static_cast<const ConstMethodrefInfo&>(e);
-        os << indent << "\tclassIndex: " << cmri.classIndex << ",\n"
-           << indent << "\tnameAndTypeIndex: " << cmri.nameAndTypeIndex << "\n";
+        os << indent << "\tclassIndex: " << cmri.class_index << ",\n"
+           << indent << "\tnameAndTypeIndex: " << cmri.name_and_type_index << "\n";
         break;
     }
     case ConstPoolEntryTag::CONSTANT_InterfaceMethodref:
@@ -39,7 +39,7 @@ static void printConstPoolEntry(std::ostream& os, const ConstPoolEntry& e, const
     case ConstPoolEntryTag::CONSTANT_String:
     {
         const ConstStringInfo& csi = static_cast<const ConstStringInfo&>(e);
-        os << indent << "\tstringIndex: " << csi.stringIndex << ",\n";
+        os << indent << "\tstringIndex: " << csi.string_index << ",\n";
         break;
     }
     case ConstPoolEntryTag::CONSTANT_Integer:
@@ -52,16 +52,16 @@ static void printConstPoolEntry(std::ostream& os, const ConstPoolEntry& e, const
     {
         const ConstDoubleInfo& cdi = static_cast<const ConstDoubleInfo&>(e);
         os << std::hex
-           << indent << "\thighBytes: " << "0x" << cdi.highBytes << ",\n"
-           << indent << "\tlowBytes: " << "0x" << cdi.lowBytes << "\n"
+           << indent << "\thighBytes: " << "0x" << cdi.high_bytes << ",\n"
+           << indent << "\tlowBytes: " << "0x" << cdi.low_bytes << "\n"
            << std::dec;
         break;
     }
     case ConstPoolEntryTag::CONSTANT_NameAndType:
     {
         const ConstNameAndTypeInfo& cnati = static_cast<const ConstNameAndTypeInfo&>(e);
-        os << indent << "\tnameIndex: " << cnati.nameIndex << ",\n"
-           << indent << "\tdescriptorIndex: " << cnati.descriptorIndex << "\n";
+        os << indent << "\tnameIndex: " << cnati.name_index << ",\n"
+           << indent << "\tdescriptorIndex: " << cnati.descriptor_index << "\n";
         break;
     }
     case ConstPoolEntryTag::CONSTANT_Utf8:
@@ -83,8 +83,8 @@ static void printConstPoolEntry(std::ostream& os, const ConstPoolEntry& e, const
     {
         const ConstInvokeDynamicInfo& cidi = static_cast<const ConstInvokeDynamicInfo&>(e);
         os << std::dec
-           << indent << "\tbootstrapMethodAttrIndex: " << cidi.bootstrapMethodAttrIndex << ",\n"
-           << indent << "\tnameAndTypeIndex: " << cidi.nameAndTypeIndex << "\n";
+           << indent << "\tbootstrapMethodAttrIndex: " << cidi.bootstrap_method_attr_index << ",\n"
+           << indent << "\tnameAndTypeIndex: " << cidi.name_and_type_index << "\n";
         break;
     }
     }
@@ -99,11 +99,11 @@ static void printExceptionTableEntry(
 {
     os << indent << "{\n"
        << std::hex
-       << indent << "\tstartPc: " << ete.startPc << ",\n"
-       << indent << "\tendPc: " << ete.endPc << ",\n"
-       << indent << "\thandlerPc: " << ete.handlerPc << ",\n"
+       << indent << "\tstartPc: " << ete.start_pc << ",\n"
+       << indent << "\tendPc: " << ete.end_pc << ",\n"
+       << indent << "\thandlerPc: " << ete.handler_pc << ",\n"
        << std::dec
-       << indent << "\tcatchType: " << ete.catchType << "\n"
+       << indent << "\tcatchType: " << ete.catch_type << "\n"
        << indent << "}";
 }
 
@@ -120,9 +120,9 @@ static void printCodeAttr(
         const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
     os << indent << "{\n"
-       << indent << "\tattrNameIndex: " << cai.attrNameIndex << ",\n"
-       << indent << "\tmaxStack: " << cai.maxStack << ",\n"
-       << indent << "\tmaxLocals: " << cai.maxLocals << ",\n"
+       << indent << "\tattrNameIndex: " << cai.attr_name_index << ",\n"
+       << indent << "\tmaxStack: " << cai.max_stack << ",\n"
+       << indent << "\tmaxLocals: " << cai.max_locals << ",\n"
        << indent << "\tcode: ";
 
     std::size_t codeSize{ cai.code.size() };
@@ -143,17 +143,17 @@ static void printCodeAttr(
     }
 
     os << indent << "\texceptionTable: ";
-    std::size_t exceptionTableSize{ cai.exceptionTable.size() };
+    std::size_t exceptionTableSize{ cai.exception_table.size() };
     if (exceptionTableSize > 0)
     {
         os << "[\n";
         std::string eteIndent{ indent + "\t\t" };
         for (std::size_t i{0}; i < exceptionTableSize - 1; i++)
         {
-            printExceptionTableEntry(os, cai.exceptionTable[i], eteIndent);
+            printExceptionTableEntry(os, cai.exception_table[i], eteIndent);
             os << ",\n";
         }
-        printExceptionTableEntry(os, cai.exceptionTable[exceptionTableSize - 1], eteIndent);
+        printExceptionTableEntry(os, cai.exception_table[exceptionTableSize - 1], eteIndent);
         os << "\n\t" << indent << "],\n";
     }
     else
@@ -190,8 +190,8 @@ static void printLineNumberTableEntry(
         const std::string& indent)
 {
     os << indent << "{\n"
-       << indent << "\tstartPc: " << lnte.startPc << ",\n"
-       << indent << "\tlineNumber: " << lnte.lineNumber << "\n"
+       << indent << "\tstartPc: " << lnte.start_pc << ",\n"
+       << indent << "\tlineNumber: " << lnte.line_number << "\n"
        << indent << "}";
 }
 
@@ -202,20 +202,20 @@ static void printLineNumberTableAttr(
         const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
     os << indent << "{\n"
-       << indent << "\tattrNameIndex: " << lntai.attrNameIndex << ",\n"
+       << indent << "\tattrNameIndex: " << lntai.attr_name_index << ",\n"
        << indent << "\tlineNumberTable: ";
 
-    std::size_t lineNumberTableSize{ lntai.lineNumberTable.size() };
+    std::size_t lineNumberTableSize{ lntai.line_number_table.size() };
     if (lineNumberTableSize > 0)
     {
         os << "[\n";
         std::string lnteIndent{ indent + "\t\t" };
         for (std::size_t i{0}; i < lineNumberTableSize - 1; i++)
         {
-            printLineNumberTableEntry(os, lntai.lineNumberTable[i], lnteIndent);
+            printLineNumberTableEntry(os, lntai.line_number_table[i], lnteIndent);
             os << ",\n";
         }
-        printLineNumberTableEntry(os, lntai.lineNumberTable[lineNumberTableSize - 1], lnteIndent);
+        printLineNumberTableEntry(os, lntai.line_number_table[lineNumberTableSize - 1], lnteIndent);
         os << "\n\t" << indent << "],\n";
     }
     else
@@ -234,8 +234,8 @@ static void printSourcefileAttr(
         const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
     os << indent << "{\n"
-       << indent << "\tattrNameIndex: " << sfai.attrNameIndex << ",\n"
-       << indent << "\tsourcefileIndex: " << sfai.sourcefileIndex << ",\n"
+       << indent << "\tattrNameIndex: " << sfai.attr_name_index << ",\n"
+       << indent << "\tsourcefileIndex: " << sfai.sourcefile_index << ",\n"
        << indent << "}";
 }
 
@@ -245,11 +245,11 @@ static void printAttr(
         const std::string& indent,
         const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
-    AttrType attrType{ resolveAttrType(constPool, ai.attrNameIndex) };
+    AttrType attrType{ resolve_attr_type(constPool, ai.attr_name_index) };
     switch (attrType)
     {
     case AttrType::ConstantValue:
-        logFixme("IMPLEMENT ConstantValue attribute printer!!!");
+        log_fixme("IMPLEMENT ConstantValue attribute printer!!!");
         break;
 
     case AttrType::Code:
@@ -259,63 +259,63 @@ static void printAttr(
     }
 
     case AttrType::StackMapTable:
-        logFixme("IMPLEMENT StackMapTable attribute print logic!!!");
+        log_fixme("IMPLEMENT StackMapTable attribute print logic!!!");
         break;
 
     case AttrType::Exceptions:
-        logFixme("IMPLEMENT Exceptions attribute print logic!!!");
+        log_fixme("IMPLEMENT Exceptions attribute print logic!!!");
         break;
 
     case AttrType::BootstrapMethods:
-        logFixme("IMPLEMENT BootstrapMethods attribute print logic!!!");
+        log_fixme("IMPLEMENT BootstrapMethods attribute print logic!!!");
         break;
 
     case AttrType::InnerClasses:
-        logFixme("IMPLEMENT InnerClasses attribute print logic!!!");
+        log_fixme("IMPLEMENT InnerClasses attribute print logic!!!");
         break;
 
     case AttrType::EnclosingMethod:
-        logFixme("IMPLEMENT EnclosingMethod attribute print logic!!!");
+        log_fixme("IMPLEMENT EnclosingMethod attribute print logic!!!");
         break;
 
     case AttrType::Synthetic:
-        logFixme("IMPLEMENT Synthetic attribute print logic!!!");
+        log_fixme("IMPLEMENT Synthetic attribute print logic!!!");
         break;
 
     case AttrType::Signature:
-        logFixme("IMPLEMENT Signature attribute print logic!!!");
+        log_fixme("IMPLEMENT Signature attribute print logic!!!");
         break;
 
     case AttrType::RuntimeVisibleAnnotations:
-        logFixme("IMPLEMENT RuntimeVisibleAnnotations attribute print logic!!!");
+        log_fixme("IMPLEMENT RuntimeVisibleAnnotations attribute print logic!!!");
         break;
 
     case AttrType::RuntimeInvisibleAnnotations:
-        logFixme("IMPLEMENT RuntimeInvisibleAnnotations attribute print logic!!!");
+        log_fixme("IMPLEMENT RuntimeInvisibleAnnotations attribute print logic!!!");
         break;
 
     case AttrType::RuntimeVisibleParameterAnnotations:
-        logFixme("IMPLEMENT RuntimeVisibleParameterAnnotations attribute print logic!!!");
+        log_fixme("IMPLEMENT RuntimeVisibleParameterAnnotations attribute print logic!!!");
         break;
 
     case AttrType::RuntimeInvisibleParameterAnnotations:
-        logFixme("IMPLEMENT RuntimeInvisibleParameterAnnotations attribute print logic!!!");
+        log_fixme("IMPLEMENT RuntimeInvisibleParameterAnnotations attribute print logic!!!");
         break;
 
     case AttrType::RuntimeVisibleTypeAnnotations:
-        logFixme("IMPLEMENT RuntimeVisibleTypeAnnotations attribute print logic!!!");
+        log_fixme("IMPLEMENT RuntimeVisibleTypeAnnotations attribute print logic!!!");
         break;
 
     case AttrType::RuntimeInvisibleTypeAnnotations:
-        logFixme("IMPLEMENT RuntimeInvisibleTypeAnnotations attribute print logic!!!");
+        log_fixme("IMPLEMENT RuntimeInvisibleTypeAnnotations attribute print logic!!!");
         break;
 
     case AttrType::AnnotationDefault:
-        logFixme("IMPLEMENT AnnotationDefault attribute print logic!!!");
+        log_fixme("IMPLEMENT AnnotationDefault attribute print logic!!!");
         break;
 
     case AttrType::MethodParameters:
-        logFixme("IMPLEMENT MethodParameters attribute print logic!!!");
+        log_fixme("IMPLEMENT MethodParameters attribute print logic!!!");
         break;
 
     case AttrType::SourceFile:
@@ -325,7 +325,7 @@ static void printAttr(
     }
 
     case AttrType::SourceDebugExtension:
-        logFixme("IMPLEMENT SourceDebugExtension attribute print logic!!!");
+        log_fixme("IMPLEMENT SourceDebugExtension attribute print logic!!!");
         break;
 
     case AttrType::LineNumberTable:
@@ -335,19 +335,19 @@ static void printAttr(
     }
 
     case AttrType::LocalVariableTable:
-        logFixme("IMPLEMENT LocalVariableTable attribute print logic!!!");
+        log_fixme("IMPLEMENT LocalVariableTable attribute print logic!!!");
         break;
 
     case AttrType::LocalVariableTypeTable:
-        logFixme("IMPLEMENT LocalVariableTypeTable attribute print logic!!!");
+        log_fixme("IMPLEMENT LocalVariableTypeTable attribute print logic!!!");
         break;
 
     case AttrType::Deprecated:
-        logFixme("IMPLEMENT Deprecated attribute print logic!!!");
+        log_fixme("IMPLEMENT Deprecated attribute print logic!!!");
         break;
 
     default:
-        logError("Unknown `AttrType` enum value: %d", attrType);
+        log_error("Unknown `AttrType` enum value: %d", attrType);
     }
 }
 
@@ -358,9 +358,9 @@ static void print_field(
         const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
     os << indent << "{\n"
-       << indent << "\taccessFlags: " << std::hex << "0x" << fi.accessFlags << ",\n"
-       << indent << "\tnameIndex: " << std::dec << fi.nameIndex << ",\n"
-       << indent << "\tdescriptorIndex: " << fi.descriptorIndex << ",\n"
+       << indent << "\taccessFlags: " << std::hex << "0x" << fi.access_flags << ",\n"
+       << indent << "\tnameIndex: " << std::dec << fi.name_index << ",\n"
+       << indent << "\tdescriptorIndex: " << fi.descriptor_index << ",\n"
        << indent << "\tattributes: ";
 
     std::size_t attributesSize{ fi.attributes.size() };
@@ -391,9 +391,9 @@ static void print_method(
         const std::vector<std::unique_ptr<ConstPoolEntry>>& constPool)
 {
     os << indent << "{\n"
-       << indent << "\taccessFlags: " << std::hex << "0x" << mi.accessFlags << ",\n"
-       << indent << "\tnameIndex: " << std::dec << mi.nameIndex << ",\n"
-       << indent << "\tdescriptorIndex: " << mi.descriptorIndex << ",\n"
+       << indent << "\taccessFlags: " << std::hex << "0x" << mi.access_flags << ",\n"
+       << indent << "\tnameIndex: " << std::dec << mi.name_index << ",\n"
+       << indent << "\tdescriptorIndex: " << mi.descriptor_index << ",\n"
        << indent << "\tattributes: ";
 
     std::size_t attributesSize{ mi.attributes.size() };
@@ -423,16 +423,16 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
     os << "{\n"
        << "\tm_magic: " << std::hex << "0x" << cf.m_magic << ",\n"
        << std::dec
-       << "\tm_minorVersion: " << cf.m_minorVersion << ",\n"
-       << "\tm_majorVersion: " << cf.m_majorVersion << ",\n";
+       << "\tm_minorVersion: " << cf.m_minor_version << ",\n"
+       << "\tm_majorVersion: " << cf.m_major_version << ",\n";
 
     os << "\tm_constPool: ";
-    if (cf.m_constPool.size() > 0)
+    if (cf.m_const_pool.size() > 0)
     {
         os << "[\n";
-        for (std::size_t i{0}; i < cf.m_constPool.size(); i++)
+        for (std::size_t i{0}; i < cf.m_const_pool.size(); i++)
         {
-            printConstPoolEntry(os, *cf.m_constPool[i], "\t\t");
+            printConstPoolEntry(os, *cf.m_const_pool[i], "\t\t");
         }
         os << "\t],\n";
     }
@@ -441,9 +441,9 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[],\n";
     }
 
-    os << "\tm_accessFlags: " << std::hex << "0x" << cf.m_accessFlags << "\n" << std::dec;
-    os << "\tm_thisClass: " << cf.m_thisClass << "\n";
-    os << "\tm_superClass: " << cf.m_superClass << "\n";
+    os << "\tm_accessFlags: " << std::hex << "0x" << cf.m_access_flags << "\n" << std::dec;
+    os << "\tm_thisClass: " << cf.m_this_class << "\n";
+    os << "\tm_superClass: " << cf.m_super_class << "\n";
 
     os << "\tm_interfaces: [";
     std::size_t interfacesSize{ cf.m_interfaces.size() };
@@ -464,10 +464,10 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[\n";
         for (std::size_t i{0}; i < fieldsSize - 1; i++)
         {
-            print_field(os, cf.m_fields[i], "\t\t", cf.m_constPool);
+            print_field(os, cf.m_fields[i], "\t\t", cf.m_const_pool);
             os << ",\n";
         }
-        print_field(os, cf.m_fields[fieldsSize - 1], "\t\t", cf.m_constPool);
+        print_field(os, cf.m_fields[fieldsSize - 1], "\t\t", cf.m_const_pool);
         os << "\n\t],\n";
     }
     else
@@ -482,10 +482,10 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[\n";
         for (std::size_t i{0}; i < methodsSize - 1; i++)
         {
-            print_method(os, cf.m_methods[i], "\t\t", cf.m_constPool);
+            print_method(os, cf.m_methods[i], "\t\t", cf.m_const_pool);
             os << ",\n";
         }
-        print_method(os, cf.m_methods[methodsSize - 1], "\t\t", cf.m_constPool);
+        print_method(os, cf.m_methods[methodsSize - 1], "\t\t", cf.m_const_pool);
         os << "\n\t],\n";
     }
     else
@@ -500,10 +500,10 @@ std::ostream& operator<<(std::ostream& os, const ClassFile& cf)
         os << "[\n";
         for (std::size_t i{0}; i < attributesSize - 1; i++)
         {
-            printAttr(os, *(cf.m_attributes[i]), "\t\t", cf.m_constPool);
+            printAttr(os, *(cf.m_attributes[i]), "\t\t", cf.m_const_pool);
             os << ",\n";
         }
-        printAttr(os, *(cf.m_attributes[attributesSize - 1]), "\t\t", cf.m_constPool);
+        printAttr(os, *(cf.m_attributes[attributesSize - 1]), "\t\t", cf.m_const_pool);
         os << "\n\t],\n";
     }
     else

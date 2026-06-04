@@ -1,0 +1,59 @@
+#ifndef PARSER_H
+#define PARSER_H
+
+#include "classFile.h"
+#include "classReader.h"
+
+#include <string>
+
+class ClassFileParser
+{
+public:
+    const std::string m_filename;
+
+    explicit ClassFileParser(ClassFileReader& reader);
+    explicit ClassFileParser(ClassFileReader& reader, const std::string& filename);
+
+    ClassFile parse();
+
+
+private:
+    ClassFileReader& m_reader;
+
+    std::vector<std::unique_ptr<ConstPoolEntry>> parse_const_pool();
+    std::unique_ptr<ConstMethodrefInfo> parse_const_methodref_info(ConstPoolEntryTag tag);
+    std::unique_ptr<ConstFieldrefInfo> parse_const_fieldref_info(ConstPoolEntryTag tag);
+    std::unique_ptr<ConstStringInfo> parse_const_string_info(ConstPoolEntryTag tag);
+    std::unique_ptr<ConstDoubleInfo> parse_const_double_info(ConstPoolEntryTag tag);
+    std::unique_ptr<ConstInvokeDynamicInfo> parse_const_invoke_dynamic_info(ConstPoolEntryTag tag);
+    std::unique_ptr<ConstClassInfo> parse_const_class_info(ConstPoolEntryTag tag);
+    std::unique_ptr<ConstUtf8Info> parse_const_utf8_info(ConstPoolEntryTag tag);
+    std::unique_ptr<ConstNameAndTypeInfo> parse_const_nameandtype_info(ConstPoolEntryTag tag);
+    std::vector<FieldInfo> parse_fields(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+    std::vector<MethodInfo> parse_methods(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    std::vector<std::unique_ptr<AttrInfo>> parse_attributes(
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    std::unique_ptr<AttrInfo> parse_attr(const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    void parse_attr_code(
+            CodeAttrInfo& code_attr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    std::vector<ExceptionTableEntry> parse_exception_table();
+
+    void parse_attr_line_number_table(
+            LineNumberTableAttrInfo& line_number_table_attr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+
+    std::vector<LineNumberTableEntry> parse_line_number_table();
+
+    void parse_attr_sourcefile(
+            SourceFileAttrInfo& sourcefile_attr,
+            const std::vector<std::unique_ptr<ConstPoolEntry>>& const_pool);
+};
+
+std::ostream& operator<<(std::ostream& os, const ClassFile& cf);
+
+#endif // PARSER_H

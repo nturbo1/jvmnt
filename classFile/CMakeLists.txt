@@ -2,6 +2,9 @@ add_library(classFile
     attributes.cpp
     classFile.cpp
     constPool.cpp
+    classFileParser.cpp
+    classReader.cpp
+    print.cpp
 )
 
 target_include_directories(classFile

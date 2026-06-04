@@ -9,9 +9,8 @@ add_executable(jvmnt main.cpp)
 target_link_libraries(jvmnt
     PRIVATE
         base
-        classParser
+        classFile
 )
 
-add_subdirectory(parser)
 add_subdirectory(base)
 add_subdirectory(classFile)

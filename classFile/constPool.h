@@ -47,15 +47,15 @@ struct ConstMethodrefInfo
     : ConstPoolEntry
 {
     /*
-     * The value of the `classIndex` item must be a valid index into the
+     * The value of the `class_index` item must be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index must be a
      * `CONSTANT_Class_info` structure representing a class, NOT an interface, type
      * that has the method as a member.
      */
-    u2 classIndex;
+    u2 class_index;
 
     /*
-     * The value of the `nameAndTypeIndex` item must be a valid index into
+     * The value of the `name_and_type_index` item must be a valid index into
      * the `constant_pool` table. The `constant_pool` entry at that index must be a
      * `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
      * the name and descriptor of the method. The descriptor MUST be a method descriptor.
@@ -64,45 +64,45 @@ struct ConstMethodrefInfo
      * be the special name `<init>`, representing an instance initialization method.
      * The return type of such a method must be `void`.
      */
-    u2 nameAndTypeIndex;
+    u2 name_and_type_index;
 
-    ConstMethodrefInfo(ConstPoolEntryTag t, u2 classIdx, u2 nameAndType_idx);
+    ConstMethodrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx);
 };
 
 struct ConstFieldrefInfo
     : ConstPoolEntry
 {
     /*
-     * The value of the `classIndex` item must be a valid index into the
+     * The value of the `class_index` item must be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index must be a
      * `CONSTANT_Class_info` structure representing a class or an interface type
      * that has the field as a member.
      */
-    u2 classIndex;
+    u2 class_index;
 
     /*
-     * The value of the `nameAndTypeIndex` item must be a valid index into
+     * The value of the `name_and_type_index` item must be a valid index into
      * the `constant_pool` table. The `constant_pool` entry at that index must be a
      * `CONSTANT_NameAndType_info` structure. This `constant_pool` entry indicates
      * the name and descriptor of the field. The descriptor MUST be a field descriptor.
      */
-    u2 nameAndTypeIndex;
+    u2 name_and_type_index;
 
-    ConstFieldrefInfo(ConstPoolEntryTag t, u2 classIdx, u2 nameAndTypeIdx);
+    ConstFieldrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx);
 };
 
 struct ConstStringInfo
     : ConstPoolEntry
 {
     /*
-     * The value of the `stringIndex` item must be a valid index into the
+     * The value of the `string_index` item must be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index must be a
      * `CONSTANT_Utf8_info` structure representing the sequence of Unicode
      * code points to which the String object is to be initialized.
      */
-    u2 stringIndex;
+    u2 string_index;
 
-    ConstStringInfo(ConstPoolEntryTag t, u2 stringIdx);
+    ConstStringInfo(ConstPoolEntryTag t, u2 string_idx);
 };
 
 /*
@@ -112,39 +112,39 @@ struct ConstClassInfo
     : ConstPoolEntry
 {
     /*
-     * The value of the nameIndex item must be a valid index into the `constant_pool`
+     * The value of the name_index item must be a valid index into the `constant_pool`
      * table. The `constant_pool` entry at that index must be a `CONSTANT_Utf8_info`
      * structure representing a valid binary class or interface name encoded in
      * internal form.
      */
-    const u2 nameIndex;
+    const u2 name_index;
 
-    ConstClassInfo(ConstPoolEntryTag t, u2 nameIdx);
+    ConstClassInfo(ConstPoolEntryTag t, u2 name_idx);
 };
 
 struct ConstLongInfo
     : ConstPoolEntry
 {
-    u4 highBytes;
-    u4 lowBytes;
+    u4 high_bytes;
+    u4 low_bytes;
 };
 
 struct ConstDoubleInfo
     : ConstPoolEntry
 {
-    u4 highBytes;
-    u4 lowBytes;
+    u4 high_bytes;
+    u4 low_bytes;
 
-    ConstDoubleInfo(ConstPoolEntryTag t, u4 hBytes, u4 lBytes);
+    ConstDoubleInfo(ConstPoolEntryTag t, u4 h_bytes, u4 l_bytes);
 };
 
 struct ConstInvokeDynamicInfo
     : ConstPoolEntry
 {
-    u2 bootstrapMethodAttrIndex;
-    u2 nameAndTypeIndex;
+    u2 bootstrap_method_attr_index;
+    u2 name_and_type_index;
 
-    ConstInvokeDynamicInfo(ConstPoolEntryTag t, u2 bootstrpMethodAttrIdx, u2 nameAndTypeIdx);
+    ConstInvokeDynamicInfo(ConstPoolEntryTag t, u2 bootstrp_method_attr_idx, u2 name_and_type_idx);
 };
 
 /*
@@ -167,22 +167,22 @@ struct ConstNameAndTypeInfo
     : ConstPoolEntry
 {
     /*
-     * The value of the `nameIndex` item must be a valid index into the
+     * The value of the `name_index` item must be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index must be a
      * `CONSTANT_Utf8_info` structure representing either the special method
      * name `<init>` or a valid unqualified name denoting a field or method.
      */
-    u2 nameIndex;
+    u2 name_index;
 
     /*
-     * The value of the `descriptorIndex` item must be a valid index into the
+     * The value of the `descriptor_index` item must be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index must be a
      * `CONSTANT_Utf8_info` structure representing a valid field descriptor
      * or method descriptor.
      */
-    u2 descriptorIndex;
+    u2 descriptor_index;
 
-    ConstNameAndTypeInfo(ConstPoolEntryTag t, u2 nameIdx, u2 descriptorIdx);
+    ConstNameAndTypeInfo(ConstPoolEntryTag t, u2 name_idx, u2 descriptor_idx);
 };
 
 #endif // CLASS_FILE_CONST_POOL_H

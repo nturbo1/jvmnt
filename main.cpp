@@ -1,33 +1,31 @@
-#include "parser/parser.h"
-
 #include "base.h"
 #include "classFile/classFile.h"
+#include "classFile/classFileParser.h"
 
 #include <iostream>
 #include <fstream>
-#include <cstdio>
 
 int main()
 {
     try
     {
-        std::string srcFile{ "Main.class" };
-        std::ifstream classFileSrc{ srcFile, std::ios::binary };
+        std::string src_file{ "Main.class" };
+        std::ifstream class_file_src{ src_file, std::ios::binary };
 
-        if (classFileSrc.fail())
-            logFatal("Failed to open the class file.");
+        if (class_file_src.fail())
+            log_fatal("Failed to open the class file.");
 
-        logDebug("Successfully opened the class file.");
+        log_debug("Successfully opened the class file.");
 
-        ClassFileReader cfReader{ classFileSrc };
-        ClassFileParser cfParser{ cfReader, srcFile };
+        ClassFileReader cf_reader{ class_file_src };
+        ClassFileParser cf_parser{ cf_reader, src_file };
 
-        ClassFile cf{ cfParser.parse() };
+        ClassFile cf{ cf_parser.parse() };
 
         // TODO: SHOULD BE REMOVED LATER: For testing only!!!
         std::cout << cf << std::endl;
 
-        cf.formatCheck();
+        cf.format_check();
     }
     catch (...) {}
 

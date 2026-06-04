@@ -31,7 +31,7 @@ struct FieldInfo
      * The value of the access_flags item is a mask of flags used to denote
      * access permission to and properties of this field.
      */
-    u2 accessFlags;
+    u2 access_flags;
 
     /*
      * The value of the `name_index` item MUST be a valid index into the
@@ -39,21 +39,21 @@ struct FieldInfo
      * `CONSTANT_Utf8_info` structure which represents a valid unqualified
      * name denoting a field.
      */
-    u2 nameIndex;
+    u2 name_index;
 
     /*
      * The value of the `descriptor_index` item MUST be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index MUST be a
      * `CONSTANT_Utf8_info` structure which represents a valid field descriptor.
      */
-    u2 descriptorIndex;
+    u2 descriptor_index;
 
     std::vector<std::unique_ptr<AttrInfo>> attributes;
 
     FieldInfo(
-        u2 accessFgs,
-        u2 nameIdx,
-        u2 descriptorIdx,
+        u2 access_fgs,
+        u2 name_idx,
+        u2 descriptor_idx,
         std::vector<std::unique_ptr<AttrInfo>> attributes
     );
 };
@@ -76,7 +76,7 @@ struct FieldInfo
  */
 struct MethodInfo
 {
-    u2 accessFlags;
+    u2 access_flags;
 
     /*
      * The value of the `name_index` item MUST be a valid index into the
@@ -85,21 +85,21 @@ struct MethodInfo
      * method names `<init>` or `<clinit>`, or a valid unqualified name
      * denoting a method.
      */
-    u2 nameIndex;
+    u2 name_index;
 
     /*
      * The value of the `descriptor_index` item MUST be a valid index into the
      * `constant_pool` table. The `constant_pool` entry at that index MUST be
      * a `CONSTANT_Utf8_info` structure representing a valid method descriptor.
      */
-    u2 descriptorIndex;
+    u2 descriptor_index;
 
     std::vector<std::unique_ptr<AttrInfo>> attributes;
 
     MethodInfo(
-        u2 accessFgs,
-        u2 nameIdx,
-        u2 descriptorIdx,
+        u2 access_fgs,
+        u2 name_idx,
+        u2 descriptor_idx,
         std::vector<std::unique_ptr<AttrInfo>> attributes
     );
 };
@@ -139,12 +139,12 @@ public:
      */
 
     const u4 m_magic;
-    const u2 m_minorVersion;
-    const u2 m_majorVersion;
+    const u2 m_minor_version;
+    const u2 m_major_version;
 
-    const std::vector<std::unique_ptr<ConstPoolEntry>> m_constPool;
+    const std::vector<std::unique_ptr<ConstPoolEntry>> m_const_pool;
 
-    const u2 m_accessFlags;
+    const u2 m_access_flags;
 
     /*
      * The value of the `this_class` item MUST be a valid index into the
@@ -152,7 +152,7 @@ public:
      * `CONSTANT_Class_info` structure representing the class or interface
      * defined by this class file.
      */
-    const u2 m_thisClass;
+    const u2 m_this_class;
 
     /*
      * For a class, the value of the `super_class` item either MUST be zero or
@@ -171,7 +171,7 @@ public:
      * index into the `constant_pool` table. The `constant_pool` entry at that index
      * MUST be a `CONSTANT_Class_info` structure representing the class `Object`.
      */
-    const u2 m_superClass;
+    const u2 m_super_class;
 
     /*
      * Each value in the `interfaces` array MUST be a valid index into the
@@ -197,10 +197,10 @@ public:
     /*
      * Checks all the formatting criteria for a given class file structure.
      *
-     * If any of the formattign criteria fails, then throws a `std::runtime_error`
+     * If any of the formatting criteria fails, then throws a `std::runtime_error`
      * exception, which should not be caught leading to the termination of the program.
      */
-    void formatCheck();
+    void format_check();
 
     /*
      * Checks if:
@@ -213,7 +213,7 @@ public:
      * If any of the above checks fails, then throws a `std::runtime_error` exception,
      * which should not be caught leading to the termination of the program.
      */
-    void checkThisClass();
+    void check_this_class();
 
     /*
      * Checks if:
@@ -235,7 +235,7 @@ public:
      *        index into the `constant_pool` table. The `constant_pool` entry at that index
      *        MUST be a `CONSTANT_Class_info` structure representing the class `Object`.
      */
-    void checkSuperClass();
+    void check_super_class();
 
     /*
      * Checks if:
@@ -246,11 +246,11 @@ public:
      *        an interface that is a direct superinterface of this class or interface
      *        type, in the left-to-right order given in the source for the type.
      */
-    void checkInterfaces();
+    void check_interfaces();
 
-    void checkFields();
+    void check_fields();
 
-    void checkMethods();
+    void check_methods();
 
     /*
      * Checks whether a given `index` is a valid index into the given `const_pool`.
@@ -258,7 +258,7 @@ public:
      * If the `index` is invalid, then throws a `std::runtime_error` exception,
      * which should not be caught leading to the termination of the program.
      */
-    void checkConstPoolIndex(std::size_t index);
+    void check_const_pool_index(std::size_t index);
 
     /*
      * Check whether the `constant_pool` entry at that index is a `CONSTANT_Class_info`
@@ -268,7 +268,7 @@ public:
      * `std::runtime_error` exception, which should not be caught leading to the
      * termination of the program.
      */
-    void checkConstPoolIndexTypeConstClass(std::size_t index);
+    void check_const_pool_index_type_const_class(std::size_t index);
 
     /*
      * Check whether the `constant_pool` entry at that index is a `CONSTANT_Utf8_info`
@@ -278,7 +278,7 @@ public:
      * `std::runtime_error` exception, which should not be caught leading to the
      * termination of the program.
      */
-    void checkConstPoolIndexTypeConstUtf8(std::size_t index);
+    void check_const_pool_index_type_const_utf8(std::size_t index);
 };
 
 enum class AccMasks

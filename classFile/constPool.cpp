@@ -6,42 +6,42 @@ ConstPoolEntry::ConstPoolEntry(ConstPoolEntryTag t)
     : tag{ t }
 {}
 
-ConstMethodrefInfo::ConstMethodrefInfo(ConstPoolEntryTag t, u2 classIdx, u2 nameAndTypeIdx)
+ConstMethodrefInfo::ConstMethodrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx)
     : ConstPoolEntry(t),
-    classIndex{ classIdx },
-    nameAndTypeIndex{ nameAndTypeIdx }
+    class_index{ class_idx },
+    name_and_type_index{ name_and_type_idx }
 {}
 
-ConstFieldrefInfo::ConstFieldrefInfo(ConstPoolEntryTag t, u2 classIdx, u2 nameAndTypeIdx)
+ConstFieldrefInfo::ConstFieldrefInfo(ConstPoolEntryTag t, u2 class_idx, u2 name_and_type_idx)
     : ConstPoolEntry(t),
-    classIndex{ classIdx },
-    nameAndTypeIndex{ nameAndTypeIdx }
+    class_index{ class_idx },
+    name_and_type_index{ name_and_type_idx }
 {}
 
-ConstStringInfo::ConstStringInfo(ConstPoolEntryTag t, u2 stringIdx)
+ConstStringInfo::ConstStringInfo(ConstPoolEntryTag t, u2 string_idx)
     : ConstPoolEntry(t),
-    stringIndex{ stringIdx }
+    string_index{ string_idx }
 {}
 
-ConstDoubleInfo::ConstDoubleInfo(ConstPoolEntryTag t, u4 hBytes, u4 lBytes)
+ConstDoubleInfo::ConstDoubleInfo(ConstPoolEntryTag t, u4 h_bytes, u4 l_bytes)
     : ConstPoolEntry(t),
-    highBytes{ hBytes },
-    lowBytes{ lBytes }
+    high_bytes{ h_bytes },
+    low_bytes{ l_bytes }
 {}
 
 ConstInvokeDynamicInfo::ConstInvokeDynamicInfo(
     ConstPoolEntryTag t,
-    u2 bootstrpMethodAttrIdx,
-    u2 nameAndTypeIdx
+    u2 bootstrp_method_attr_idx,
+    u2 name_and_type_idx
 )
     : ConstPoolEntry(t),
-    bootstrapMethodAttrIndex{ bootstrpMethodAttrIdx },
-    nameAndTypeIndex{ nameAndTypeIdx }
+    bootstrap_method_attr_index{ bootstrp_method_attr_idx },
+    name_and_type_index{ name_and_type_idx }
 {}
 
-ConstClassInfo::ConstClassInfo(ConstPoolEntryTag t, u2 nameIdx)
+ConstClassInfo::ConstClassInfo(ConstPoolEntryTag t, u2 name_idx)
     : ConstPoolEntry(t),
-    nameIndex{ nameIdx }
+    name_index{ name_idx }
 {}
 
 ConstUtf8Info::ConstUtf8Info(ConstPoolEntryTag t, std::vector<u1> bs)
@@ -49,10 +49,10 @@ ConstUtf8Info::ConstUtf8Info(ConstPoolEntryTag t, std::vector<u1> bs)
     bytes{ bs }
 {}
 
-ConstNameAndTypeInfo::ConstNameAndTypeInfo(ConstPoolEntryTag t, u2 nameIdx, u2 descriptorIdx)
+ConstNameAndTypeInfo::ConstNameAndTypeInfo(ConstPoolEntryTag t, u2 name_idx, u2 descriptor_idx)
     : ConstPoolEntry(t),
-    nameIndex{ nameIdx },
-    descriptorIndex{ descriptorIdx }
+    name_index{ name_idx },
+    descriptor_index{ descriptor_idx }
 {}
 
 std::ostream& operator<<(std::ostream& os, const ConstPoolEntryTag& t)
